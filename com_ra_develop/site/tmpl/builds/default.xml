@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Show Builds" option="View">
+        <message>
+                        <![CDATA[List Builds of the extensions]]>
+        </message>
+	</layout>
+	
+</metadata>

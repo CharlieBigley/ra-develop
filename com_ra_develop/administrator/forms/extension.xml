@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Ramblers\Component\Ra_develop\Administrator\Field">
+  <fieldset>
+    <field name="id" type="text" readonly="true" class="readonly" default="0" description="JGLOBAL_FIELD_ID_DESC"/>
+    <field name="state" default="1" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+      <option value="2">JARCHIVED</option>
+      <option value="-2">JTRASHED</option>
+    </field>
+    <field name="ordering"/>
+    <field name="checked_out" type="hidden" filter="unset"/>
+    <field name="checked_out_time" type="hidden" filter="unset"/>
+    <field name="created_by" type="createdby" default="0" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_CREATED_BY"/>
+    <field name="modified_by" type="modifiedby" default="0" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" description="JGLOBAL_FIELD_MODIFIED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_MODIFIED_BY"/>
+    <field name="subsystem_id" sql_select="id,name" sql_from="#__ra_sub_systems" sql_order="name" key_field="id" value_field="name" type="sql" layout="joomla.form.field.list-fancy-select" label="COM_RA_DEVELOP_FORM_LBL_COMPONENT_SUBSYSTEM_ID" description="COM_RA_DEVELOP_FORM_DESC_COMPONENT_SUBSYSTEM_ID" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_SUBSYSTEM_ID"/>
+    <field name="name" maxlength="50" filter="raw" type="text" label="COM_RA_DEVELOP_FORM_LBL_COMPONENT_NAME" description="COM_RA_DEVELOP_FORM_DESC_COMPONENT_NAME" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_NAME"/>
+    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+  </fieldset>
+</form>
