@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset label="COM_RA_DEVELOP" name="ra_develop">
-        
+    <fieldset label="Config for RA Develop" name="ra_develop">
+        <field name="environment"
+                type="text"
+                default=""
+                label="Environment"
+                description="Identifier for the environment to use whenn creating builds"
+        />
+        <field
+            name="site_id"
+            query="SELECT `id`, `url` FROM #__ra_api_sites ORDER BY `url`"
+            type="sql"
+            key_field="id"
+            value_field="url"
+            label="Site"
+            require="true"
+            description="Site from which the data is to be read">
+        </field>        
     </fieldset>
 
     <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">

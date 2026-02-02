@@ -18,7 +18,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Helper\TagsHelper;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
-use Ramblers\Component\Ra_develop\Administrator\Helper\Ra_developHelper;
 
 /**
  * Methods supporting a list of Extensions records.
@@ -41,10 +40,9 @@ class ExtensionsModel extends ListModel
 		{
 			$config['filter_fields'] = array(
 				'id', 'a.id',
-				'state', 'a.state',
-				'ordering', 'a.ordering',
-				'subsystem_id', 'a.subsystem_id',
-				'name', 'a.name',
+				's.name',
+				't.name',
+				'a.name',
 			);
 		}
 
@@ -127,9 +125,13 @@ class ExtensionsModel extends ListModel
 		);
 		$query->from('`#__ra_extensions` AS a');
 
-		// Join over the users for the checked out user
-		$query->select("uc.name AS uEditor");
-		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
+		// Get the sub system
+		$query->select("s.name AS subsystem_name");
+		$query->join("LEFT", "#__ra_sub_systems AS s ON s.id=a.subsystem_id");
+
+		// Get the extension type
+		$query->select("t.name AS type_name");
+		$query->join("LEFT", "#__ra_extension_types AS t ON t.id=a.extension_type_id");
 
 		// Filter by published state
 		$published = $this->getState('filter.state');

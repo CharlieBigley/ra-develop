@@ -37,13 +37,13 @@ $canOrder  = $user->authorise('core.edit.state', 'com_ra_develop');
 
 if (!empty($saveOrder))
 {
-	$saveOrderingUrl = 'index.php?option=com_ra_develop&task=components.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
+	$saveOrderingUrl = 'index.php?option=com_ra_develop&task=extensions.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
 	HTMLHelper::_('draggablelist.draggable');
 }
 
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_ra_develop&view=components'); ?>" method="post"
+<form action="<?php echo Route::_('index.php?option=com_ra_develop&view=extensions'); ?>" method="post"
 	  name="adminForm" id="adminForm">
 	<div class="row">
 		<div class="col-md-12">
@@ -51,7 +51,7 @@ if (!empty($saveOrder))
 			<?php //echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 
 				<div class="clearfix"></div>
-				<table class="table table-striped" id="componentList">
+				<table class="table table-striped" id="extensionList">
 					<thead>
 					<tr>
 						<th class="w-1 text-center">
@@ -59,17 +59,17 @@ if (!empty($saveOrder))
 								   title="<?php echo Text::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)"/>
 						</th>
 						
-						
+						<th class='left'>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Sub system', 's.name', $listDirn, $listOrder); ?>
+						</th>					
 						
 						<th class='left'>
 							<?php echo HTMLHelper::_('searchtools.sort',  'Extension', 'a.name', $listDirn, $listOrder); ?>
 						</th>
+	
 						<th class='left'>
-						<?php echo HTMLHelper::_('searchtools.sort',  'Type', 'a.subsystem_id', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('searchtools.sort',  'Type', 't.name', $listDirn, $listOrder); ?>
 						</th>						
-						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'Sub system', 'a.subsystem_id', $listDirn, $listOrder); ?>
-						</th>
 						
 					<th scope="col" class="w-3 d-none d-lg-table-cell" >
 
@@ -95,7 +95,9 @@ if (!empty($saveOrder))
 							<td class="text-center">
 								<?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
 							</td>
-							
+							<td>
+								<?php echo $item->subsystem_name; ?>
+							</td>								
 							
 							
 							<td>
@@ -103,19 +105,22 @@ if (!empty($saveOrder))
 									<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'components.', $canCheckin); ?>
 								<?php endif; ?>
 								<?php if ($canEdit) : ?>
-									<a href="<?php echo Route::_('index.php?option=com_ra_develop&task=component.edit&id='.(int) $item->id); ?>">
+									<a href="<?php echo Route::_('index.php?option=com_ra_develop&task=extension.edit&id='.(int) $item->id); ?>">
 									<?php echo $this->escape($item->name); ?>
 									</a>
 								<?php else : ?>
 												<?php echo $this->escape($item->name); ?>
 								<?php endif; ?>
 							</td>
-							<td>
-								<?php echo $item->subsystem; ?>
-							</td>
-							<td>
-								<?php echo $item->subsystem_id; ?>
-							</td>							
+
+								<?php 
+								echo '<td>';
+								echo $item->type_name; 
+								echo '</td>'
+
+								?>	
+
+						
 							<td class="d-none d-lg-table-cell">
 							<?php echo $item->id; ?>
 

@@ -80,25 +80,15 @@ class HtmlView extends BaseHtmlView
 
 		$canDo = Ra_developHelper::getActions();
 
-		ToolbarHelper::title(Text::_('COM_RA_DEVELOP_TITLE_EXTENSION_TYPE'), "generic");
+		ToolbarHelper::title(Text::_('Extension Type'), "generic");
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
 		{
-			ToolbarHelper::apply('extension_type.apply', 'JTOOLBAR_APPLY');
+//			ToolbarHelper::apply('extension_type.apply', 'JTOOLBAR_APPLY');
 			ToolbarHelper::save('extension_type.save', 'JTOOLBAR_SAVE');
 		}
 
-		if (!$checkedOut && ($canDo->get('core.create')))
-		{
-			ToolbarHelper::custom('extension_type.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
-		}
-
-		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create'))
-		{
-			ToolbarHelper::custom('extension_type.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
-		}
 
 		if (empty($this->item->id))
 		{

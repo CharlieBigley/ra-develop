@@ -11,10 +11,12 @@
     <field name="ordering"/>
     <field name="checked_out" type="hidden" filter="unset"/>
     <field name="checked_out_time" type="hidden" filter="unset"/>
-    <field name="created_by" type="createdby" default="0" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_SUBSYSTEM_CREATED_BY"/>
-    <field name="modified_by" type="modifiedby" default="0" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" description="JGLOBAL_FIELD_MODIFIED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_SUBSYSTEM_MODIFIED_BY"/>
-    <field name="repository_name" maxlength="100" filter="safehtml" type="text" label="COM_RA_DEVELOP_FORM_LBL_SUBSYSTEM_REPOSITORY_NAME" description="COM_RA_DEVELOP_FORM_DESC_SUBSYSTEM_REPOSITORY_NAME" hint="COM_RA_DEVELOP_FORM_LBL_SUBSYSTEM_REPOSITORY_NAME"/>
-    <field name="name" maxlength="50" filter="raw" type="text" label="COM_RA_DEVELOP_FORM_LBL_SUBSYSTEM_NAME" description="COM_RA_DEVELOP_FORM_DESC_SUBSYSTEM_NAME" hint="COM_RA_DEVELOP_FORM_LBL_SUBSYSTEM_NAME"/>
-    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+    <field name="created_by" type="createdby" default="0" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" hidden="true" />
+    <field name="modified_by" type="modifiedby" default="0" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" description="JGLOBAL_FIELD_MODIFIED_BY_DESC" hidden="true" />
+    <field name="repository_name" maxlength="100" filter="safehtml" type="text" label="Repository name" description="Name used in git" />
+    <field name="name" maxlength="50" filter="raw" type="text" 
+    label="Name" description="Name of the sub system" />
+    <field name="version_note" type="text" 
+    label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
   </fieldset>
 </form>

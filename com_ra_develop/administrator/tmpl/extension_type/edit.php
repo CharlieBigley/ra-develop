@@ -26,18 +26,13 @@ HTMLHelper::_('bootstrap.tooltip');
 	action="<?php echo Route::_('index.php?option=com_ra_develop&layout=edit&id=' . (int) $this->item->id); ?>"
 	method="post" enctype="multipart/form-data" name="adminForm" id="component-form" class="form-validate form-horizontal">
 
-	<?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'details')); ?>
-	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_RA_DEVELOP_TITLE_EXTENSION_TYPE', true)); ?>
 	<div class="row-fluid">
 		<div class="col-md-12 form-horizontal">
 			<fieldset class="adminform">
-				<legend><?php echo Text::_('COM_RA_DEVELOP_TITLE_EXTENSION_TYPE'); ?></legend>
-				<?php echo $this->form->renderField('repository_name'); ?>
 				<?php echo $this->form->renderField('name'); ?>
 			</fieldset>
 		</div>
 	</div>
-	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 	<input type="hidden" name="jform[id]" value="<?php echo isset($this->item->id) ? $this->item->id : ''; ?>" />
 
 	<input type="hidden" name="jform[state]" value="<?php echo isset($this->item->state) ? $this->item->state : ''; ?>" />

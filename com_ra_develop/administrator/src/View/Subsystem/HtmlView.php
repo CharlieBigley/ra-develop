@@ -80,7 +80,7 @@ class HtmlView extends BaseHtmlView
 
 		$canDo = Ra_developHelper::getActions();
 
-		ToolbarHelper::title(Text::_('COM_RA_DEVELOP_TITLE_SUBSYSTEM'), "generic");
+		ToolbarHelper::title(Text::_('Sub system'), "generic");
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))

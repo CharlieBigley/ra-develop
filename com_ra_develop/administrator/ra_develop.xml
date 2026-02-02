@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="4.0" method="upgrade">
     <name>RA Develop</name>
-    <element>com_ra_develop</element>
-    <creationDate>2026-01-30</creationDate>
+    <element>com_ra_develop</element>    
+    <creationDate>2026-02-02</creationDate>
     <copyright>2026 Charlie Bigley</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <author>Charlie Bigley</author>
     <authorEmail>charlie@bigley.me.uk</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>CVS: 0.6.0</version>
+    <version>1.0.1</version>
     <description>Tools to assist development process</description>
     <namespace path="src">Ramblers\Component\Ra_develop</namespace>
-    
-    
-    
+     
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
@@ -29,42 +27,36 @@
             <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
-
-    
-
-    <files folder="site">
-        <folder>src</folder>
+    <files folder="site">        
         <folder>forms</folder>
-        <folder>tmpl</folder>
+        <folder>languages</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>       
     </files>
     <media destination="com_ra_develop" folder="media">
         <folder>css</folder>
         <folder>js</folder>
         <filename>joomla.asset.json</filename>
     </media>
-    <languages folder="site/languages">
-        
+    <languages folder="site/languages">      
 			<language tag="en-GB">en-GB/com_ra_develop.ini</language>
     </languages>
     <administration>
-        <menu>COM_RA_DEVELOP</menu>
-        <submenu>
-            
-            <menu link="option=com_ra_develop&amp;view=builds" view="builds" alt="Ra_develop/Builds">COM_RA_DEVELOP_TITLE_BUILDS</menu>
+        <menu link="option=com_ra_develop&amp;view=builds">RA Develop</menu>
 
-        </submenu>
         <files folder="administrator">
             <filename>access.xml</filename>
             <filename>config.xml</filename>
+            <folder>assets</folder>
             <folder>forms</folder>
+            <folder>languages</folder>
+            <folder>presets</folder>
+            <folder>services</folder>         
+            <folder>sql</folder>
             <folder>src</folder>
             <folder>tmpl</folder>
-            <folder>services</folder>
-            <folder>presets</folder>
-            <folder>sql</folder>
         </files>
-        <languages folder="administrator/languages">
-            
+        <languages folder="administrator/languages">         
 			<language tag="en-GB">en-GB/com_ra_develop.ini</language>
 			<language tag="en-GB">en-GB/com_ra_develop.sys.ini</language>
         </languages>

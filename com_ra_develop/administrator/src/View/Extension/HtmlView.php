@@ -1,13 +1,13 @@
 <?php
 /**
- * @version    CVS: 0.3.0
+ * @version    CVS: 0.4.0
  * @package    Com_Ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Ramblers\Component\Ra_develop\Administrator\View\Component_type;
+namespace Ramblers\Component\Ra_develop\Administrator\View\Extension;
 // No direct access
 defined('_JEXEC') or die;
 
@@ -18,9 +18,9 @@ use \Ramblers\Component\Ra_develop\Administrator\Helper\Ra_developHelper;
 use \Joomla\CMS\Language\Text;
 
 /**
- * View class for a single Component_type.
+ * View class for a single Extension.
  *
- * @since  0.3.0
+ * @since  0.4.0
  */
 class HtmlView extends BaseHtmlView
 {
@@ -80,35 +80,24 @@ class HtmlView extends BaseHtmlView
 
 		$canDo = Ra_developHelper::getActions();
 
-		ToolbarHelper::title(Text::_('COM_RA_DEVELOP_TITLE_COMPONENT_TYPE'), "generic");
+		ToolbarHelper::title(Text::_('Extension'), "generic");
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
 		{
-			ToolbarHelper::apply('component_type.apply', 'JTOOLBAR_APPLY');
-			ToolbarHelper::save('component_type.save', 'JTOOLBAR_SAVE');
+			ToolbarHelper::apply('extension.apply', 'JTOOLBAR_APPLY');
+			ToolbarHelper::save('extension.save', 'JTOOLBAR_SAVE');
 		}
 
-		if (!$checkedOut && ($canDo->get('core.create')))
-		{
-			ToolbarHelper::custom('component_type.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
-		}
 
-		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create'))
-		{
-			ToolbarHelper::custom('component_type.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
-		}
-
-		
 
 		if (empty($this->item->id))
 		{
-			ToolbarHelper::cancel('component_type.cancel', 'JTOOLBAR_CANCEL');
+			ToolbarHelper::cancel('extension.cancel', 'JTOOLBAR_CANCEL');
 		}
 		else
 		{
-			ToolbarHelper::cancel('component_type.cancel', 'JTOOLBAR_CLOSE');
+			ToolbarHelper::cancel('extension.cancel', 'JTOOLBAR_CLOSE');
 		}
 	}
 }

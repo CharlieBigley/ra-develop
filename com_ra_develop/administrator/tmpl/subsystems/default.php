@@ -62,10 +62,10 @@ if (!empty($saveOrder))
 						
 						
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'COM_RA_DEVELOP_SUBSYSTEMS_NAME', 'a.name', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Sub System', 'a.name', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'COM_RA_DEVELOP_SUBSYSTEMS_REPOSITORY_NAME', 'a.repository_name', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Name in Git', 'a.repository_name', $listDirn, $listOrder); ?>
 						</th>
 						
 					<th scope="col" class="w-3 d-none d-lg-table-cell" >

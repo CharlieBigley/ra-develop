@@ -13,8 +13,8 @@
     <field name="checked_out_time" type="hidden" filter="unset"/>
     <field name="created_by" type="createdby" default="0" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_EXTENSION_TYPE_CREATED_BY"/>
     <field name="modified_by" type="modifiedby" default="0" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" description="JGLOBAL_FIELD_MODIFIED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_EXTENSION_TYPE_MODIFIED_BY"/>
-    <field name="repository_name" maxlength="100" filter="safehtml" type="text" label="COM_RA_DEVELOP_FORM_LBL_EXTENSION_TYPE_REPOSITORY_NAME" description="COM_RA_DEVELOP_FORM_DESC_EXTENSION_TYPE_REPOSITORY_NAME" hint="COM_RA_DEVELOP_FORM_LBL_EXTENSION_TYPE_REPOSITORY_NAME"/>
-    <field name="name" maxlength="50" filter="raw" type="text" label="COM_RA_DEVELOP_FORM_LBL_EXTENSION_TYPE_NAME" description="COM_RA_DEVELOP_FORM_DESC_EXTENSION_TYPE_NAME" hint="COM_RA_DEVELOP_FORM_LBL_EXTENSION_TYPE_NAME"/>
+    <field name="name" maxlength="50" filter="raw" type="text" 
+    label="Name" description="Type of the extension" />
     <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
   </fieldset>
 </form>

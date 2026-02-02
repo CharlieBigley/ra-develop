@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS `#__ra_builds`;
 CREATE TABLE `#__ra_builds` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `build_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
     `component_name` VARCHAR(50),
     `version`  VARCHAR(20),
     `version_sort` VARCHAR(22) NULL,
@@ -21,7 +22,7 @@ CREATE TABLE `#__ra_extensions` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(50),
     `subsystem_id` INT NULL DEFAULT "0",
-    `component_type_id` INT NULL DEFAULT "0",
+    `extension_type_id` INT NULL DEFAULT "0",
     
     `state` TINYINT(1)  NULL  DEFAULT 1,
     `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   

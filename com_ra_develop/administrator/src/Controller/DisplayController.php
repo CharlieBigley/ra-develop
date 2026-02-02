@@ -29,7 +29,7 @@ class DisplayController extends BaseController
 	 * @var    string
 	 * @since  0.3.0
 	 */
-	protected $default_view = 'extension_types';
+	protected $default_view = 'builds';
 
 	/**
 	 * Method to display a view.

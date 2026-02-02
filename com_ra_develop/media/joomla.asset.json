@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "com_ra_develop",
-  "version": "CVS: 0.3.0",
+  "version": "CVS: 0.2.0",
   "license": "GNU General Public License version 2 or later; see LICENSE.txt",
   "assets": [
     {

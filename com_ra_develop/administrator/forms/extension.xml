@@ -13,8 +13,20 @@
     <field name="checked_out_time" type="hidden" filter="unset"/>
     <field name="created_by" type="createdby" default="0" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_CREATED_BY"/>
     <field name="modified_by" type="modifiedby" default="0" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" description="JGLOBAL_FIELD_MODIFIED_BY_DESC" hidden="true" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_MODIFIED_BY"/>
-    <field name="subsystem_id" sql_select="id,name" sql_from="#__ra_sub_systems" sql_order="name" key_field="id" value_field="name" type="sql" layout="joomla.form.field.list-fancy-select" label="COM_RA_DEVELOP_FORM_LBL_COMPONENT_SUBSYSTEM_ID" description="COM_RA_DEVELOP_FORM_DESC_COMPONENT_SUBSYSTEM_ID" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_SUBSYSTEM_ID"/>
-    <field name="name" maxlength="50" filter="raw" type="text" label="COM_RA_DEVELOP_FORM_LBL_COMPONENT_NAME" description="COM_RA_DEVELOP_FORM_DESC_COMPONENT_NAME" hint="COM_RA_DEVELOP_FORM_LBL_COMPONENT_NAME"/>
+    <field name="subsystem_id" sql_select="id,name" 
+      sql_from="#__ra_sub_systems" sql_order="name" key_field="id" 
+      value_field="name" type="sql" 
+      layout="joomla.form.field.list-fancy-select" 
+      label="Sub system" 
+      description="Sub system to which this extension belongs" />
+     <field name="extension_type_id" sql_select="id,name" 
+      sql_from="#__ra_extension_types" sql_order="name" key_field="id" 
+      value_field="name" type="sql" 
+      layout="joomla.form.field.list-fancy-select" 
+      label="Type" 
+      description="Type of the extension" />
+    <field name="name" maxlength="50" filter="raw" type="text" 
+    label="Extension" description="Name of the extension" hint="com_ra_xx"/>
     <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
   </fieldset>
 </form>

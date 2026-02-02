@@ -25,7 +25,7 @@ HTMLHelper::_('behavior.multiselect');
 // Import CSS
 $wa =  $this->document->getWebAssetManager();
 $wa->useStyle('com_ra_develop.admin')
-    ->useScript('com_ra_develop.admin');
+	->useScript('com_ra_develop.admin');
 
 $user      = Factory::getApplication()->getIdentity();
 $userId    = $user->get('id');
@@ -62,16 +62,19 @@ if (!empty($saveOrder))
 						
 						
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'COM_RA_DEVELOP_BUILDS_BUILD_DATE', 'a.build_date', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Date', 'a.build_date', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'COM_RA_DEVELOP_BUILDS_ENVIRONMENT', 'a.environment', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Environment', 'a.environment', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'COM_RA_DEVELOP_BUILDS_COMPONENT_ID', 'a.component_id', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Extension', 'a.component_id', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'COM_RA_DEVELOP_BUILDS_VERSION', 'a.version', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Type', 'a.component_id', $listDirn, $listOrder); ?>
+						</th>
+						<th class='left'>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Version', 'a.version', $listDirn, $listOrder); ?>
 						</th>
 						
 					<th scope="col" class="w-3 d-none d-lg-table-cell" >
@@ -121,6 +124,9 @@ if (!empty($saveOrder))
 							</td>
 							<td>
 								<?php echo $item->component_id; ?>
+							</td>
+							<td>
+								<?php echo $item->type; ?>
 							</td>
 							<td>
 								<?php echo $item->version; ?>

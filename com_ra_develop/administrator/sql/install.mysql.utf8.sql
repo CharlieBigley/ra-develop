@@ -1,18 +1,90 @@
-CREATE TABLE IF NOT EXISTS `#__ra_extension_types` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-
-`state` TINYINT(1)  NULL  DEFAULT 1,
-`ordering` INT(11)  NULL  DEFAULT 0,
-`checked_out` INT(11)  UNSIGNED,
-`checked_out_time` DATETIME NULL  DEFAULT NULL ,
-`created_by` INT(11)  NULL  DEFAULT 0,
-`modified_by` INT(11)  NULL  DEFAULT 0,
-`repository_name` VARCHAR(100)  NULL  DEFAULT "",
-`name` VARCHAR(50)  NULL  DEFAULT "",
+DROP TABLE IF EXISTS `#__ra_builds`;
+CREATE TABLE `#__ra_builds` (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `build_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
+    `component_name` VARCHAR(50),
+    `version`  VARCHAR(20),
+    `version_sort` VARCHAR(22) NULL,
+    
+    `state` TINYINT(1)  NULL  DEFAULT 1,
+    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
+    `created_by` INT NULL DEFAULT "0",
+    `modified` DATETIME NULL DEFAULT NULL,
+    `modified_by` INT NULL DEFAULT "0",
+    `checked_out_time` DATETIME NULL  DEFAULT NULL ,
+    `checked_out` INT NULL,  
+    `ordering` INT NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`)
-,KEY `idx_state` (`state`)
-,KEY `idx_checked_out` (`checked_out`)
-,KEY `idx_created_by` (`created_by`)
-,KEY `idx_modified_by` (`modified_by`)
 ) DEFAULT COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS `#__ra_extensions`;
+CREATE TABLE `#__ra_extensions` (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50),
+    `subsystem_id` INT NULL DEFAULT "0",
+    `extension_type_id` INT NULL DEFAULT "0",
+    
+    `state` TINYINT(1)  NULL  DEFAULT 1,
+    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
+    `created_by` INT NULL DEFAULT "0",
+    `modified` DATETIME NULL DEFAULT NULL,
+    `modified_by` INT NULL DEFAULT "0",
+    `checked_out_time` DATETIME NULL  DEFAULT NULL ,
+    `checked_out` INT NULL,  
+    `ordering` INT NOT NULL DEFAULT 0,
+PRIMARY KEY (`id`)
+) DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `#__ra_extensions` (subsystem_id,extension_type_id,name) VALUES
+(1,1,'com_ra_events'),
+(1,1,'com_ra_mailman'),
+(1,1,'com_ra_tools'),
+(1,2,'mod_ra_events'),
+(1,2,'mod_ra_tools');
+
+DROP TABLE IF EXISTS `#__ra_extension_types`;
+CREATE TABLE `#__ra_extension_types` (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50),
+    
+    `state` TINYINT(1)  NULL  DEFAULT 1,
+    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
+    `created_by` INT NULL DEFAULT "0",
+    `modified` DATETIME NULL DEFAULT NULL,
+    `modified_by` INT NULL DEFAULT "0",
+    `checked_out_time` DATETIME NULL  DEFAULT NULL ,
+    `checked_out` INT NULL,  
+    `ordering` INT NOT NULL DEFAULT 0,
+PRIMARY KEY (`id`)
+) DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `#__ra_extension_types` (name) VALUES
+('Component'),
+('Module'),
+('Plugin - cli'),
+('Plugin - system');
+
+
+DROP TABLE IF EXISTS `#__ra_sub_systems`;
+CREATE TABLE `#__ra_sub_systems` (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50),
+    `repository_name` VARCHAR(100),
+    
+    `state` TINYINT(1)  NULL  DEFAULT 1,
+    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
+    `created_by` INT NULL DEFAULT "0",
+    `modified` DATETIME NULL DEFAULT NULL,
+    `modified_by` INT NULL DEFAULT "0",
+    `checked_out_time` DATETIME NULL  DEFAULT NULL ,
+    `checked_out` INT NULL,  
+    `ordering` INT NOT NULL DEFAULT 0,
+PRIMARY KEY (`id`)
+) DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `#__ra_sub_systems` (name,repository_name) VALUES
+('RA Tools','ra-tools'),
+('RA Events','ra-events'),
+('RA MailMan','ra-mailman'),
+('RA Walks','ra-walks'),
+('RA Develop','ra-develop');

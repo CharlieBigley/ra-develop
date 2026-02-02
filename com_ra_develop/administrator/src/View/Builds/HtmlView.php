@@ -73,7 +73,7 @@ class HtmlView extends BaseHtmlView
 		$state = $this->get('State');
 		$canDo = Ra_developHelper::getActions();
 
-		ToolbarHelper::title(Text::_('COM_RA_DEVELOP_TITLE_BUILDS'), "generic");
+		ToolbarHelper::title(Text::_('Builds'), "generic");
 
 		$toolbar = Toolbar::getInstance('toolbar');
 

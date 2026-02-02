@@ -74,7 +74,7 @@ class HtmlView extends BaseHtmlView
 		$state = $this->get('State');
 		$canDo = Ra_developHelper::getActions();
 
-		ToolbarHelper::title(Text::_('COM_RA_DEVELOP_TITLE_EXTENSION_TYPES'), "generic");
+		ToolbarHelper::title(Text::_('Extension Types'), "generic");
 
 		$toolbar = Toolbar::getInstance('toolbar');
 
@@ -142,11 +142,6 @@ class HtmlView extends BaseHtmlView
 					->message('JGLOBAL_CONFIRM_DELETE')
 					->listCheck(true);
 			}
-		}
-
-		if ($canDo->get('core.admin'))
-		{
-			$toolbar->preferences('com_ra_develop');
 		}
 			$toolbar->standardButton('nrecords')
 					->icon('fa fa-info-circle')
