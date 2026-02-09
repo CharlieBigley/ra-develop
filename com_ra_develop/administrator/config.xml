@@ -5,7 +5,13 @@
                 type="text"
                 default=""
                 label="Environment"
-                description="Identifier for the environment to use whenn creating builds"
+                description="Identifier for the environment to use when creating builds"
+        />
+         <field name="git_base"
+                type="text"
+                default="/"
+                label="Git Base Directory"
+                description="Base directory where all git projects are located"
         />
         <field
             name="site_id"

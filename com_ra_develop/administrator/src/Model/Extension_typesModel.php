@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.3.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -18,7 +18,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Helper\TagsHelper;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
-use Ramblers\Component\Ra_develop\Administrator\Helper\Ra_developHelper;
 
 /**
  * Methods supporting a list of Extension_types records.
@@ -51,6 +50,10 @@ class Extension_typesModel extends ListModel
 		}
 
 		parent::__construct($config);
+		
+		// Load component language file for form translations
+		$lang = Factory::getApplication()->getLanguage();
+		$lang->load('com_ra_develop', JPATH_ADMINISTRATOR . '/components/com_ra_develop', 'en-GB', true);
 	}
 
 	/**

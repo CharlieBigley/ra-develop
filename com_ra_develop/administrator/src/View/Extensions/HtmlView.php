@@ -1,10 +1,11 @@
 <?php
 /**
- * @version    CVS: 0.4.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * 04/02/26 CB correct page heading
  */
 
 namespace Ramblers\Component\Ra_develop\Administrator\View\Extensions;
@@ -12,7 +13,7 @@ namespace Ramblers\Component\Ra_develop\Administrator\View\Extensions;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
-use \Ramblers\Component\Ra_develop\Administrator\Helper\Ra_developHelper;
+use Joomla\CMS\Helper\ContentHelper;
 use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\CMS\Language\Text;
@@ -71,9 +72,9 @@ class HtmlView extends BaseHtmlView
 	protected function addToolbar()
 	{
 		$state = $this->get('State');
-		$canDo = Ra_developHelper::getActions();
+		$canDo = ContentHelper::getActions('com_ra_develop');
 
-		ToolbarHelper::title(Text::_('COM_RA_DEVELOP_TITLE_EXTENSIONS'), "generic");
+		ToolbarHelper::title(Text::_('Extensions'), "generic");
 
 		$toolbar = Toolbar::getInstance('toolbar');
 

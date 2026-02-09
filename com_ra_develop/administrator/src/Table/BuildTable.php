@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.1.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -23,7 +23,6 @@ use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\Registry\Registry;
-use \Ramblers\Component\Ra_develop\Administrator\Helper\Ra_developHelper;
 use \Joomla\CMS\Helper\ContentHelper;
 
 
@@ -91,11 +90,10 @@ class BuildTable extends Table implements VersionableTableInterface, TaggableTab
 		$input = Factory::getApplication()->input;
 		$task = $input->getString('task', '');
 
-		if ($array['id'] == 0 && empty($array['created_by']))
-		{
-			$array['created_by'] = Factory::getUser()->id;
-		}
-
+        if ($array['id'] == 0) {
+            $array['created'] = Factory::getDate('now', Factory::getConfig()->get('offset'))->toSql(true);
+            $array['created_by'] = $user->id;
+        }
 		if ($array['id'] == 0 && empty($array['modified_by']))
 		{
 			$array['modified_by'] = Factory::getUser()->id;
@@ -111,6 +109,20 @@ class BuildTable extends Table implements VersionableTableInterface, TaggableTab
 		{
 			$array['build_date'] = NULL;
 			$this->build_date = NULL;
+		}
+
+		// Generate version_sort from version field (format: XX.XX.XXX for proper sorting)
+		if (isset($array['version']) && !empty($array['version']))
+		{
+			$version_parts = explode('.', $array['version']);
+			if (count($version_parts) === 3)
+			{
+				$array['version_sort'] = sprintf('%02d%02d%03d', 
+					(int)$version_parts[0], 
+					(int)$version_parts[1], 
+					(int)$version_parts[2]
+				);
+			}
 		}
 
 		if (isset($array['params']) && is_array($array['params']))
@@ -211,14 +223,9 @@ class BuildTable extends Table implements VersionableTableInterface, TaggableTab
 	 */
 	public function check()
 	{
-		// If there is an ordering column and this is a new row then get the next ordering value
-		if (property_exists($this, 'ordering') && $this->id == 0)
-		{
-			$this->ordering = self::getNextOrder();
-		}
-		
-		
-
+		echo $this->version . '<br>'; // --- IGNORE ---
+		$this->environment = 'mac';
+		$this->build_date = Factory::getDate('now', Factory::getConfig()->get('offset'))->toSql(true);
 		return parent::check();
 	}
 

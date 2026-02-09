@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
     <fields name="filter">
-        <field name="search" type="text" description="COM_RA_DEVELOP_SEARCH_FILTER_SUBMIT"
-               label="COM_USERS_FILTER_SEARCH_DESC"
+        <field name="search" type="text" description="JSEARCH_FILTER_SUBMIT"
+               label="JSEARCH_FILTER_LABEL"
                class="js-stools-search-string" />
 
         <field name="state"
                type="status"
-               label="COM_RA_DEVELOP_FILTER_STATE"
-               description="COM_RA_DEVELOP_FILTER_STATE_DESC"
+               label="JSTATUS"
+               description="JFIELD_PUBLISHED_DESC"
                onchange="this.form.submit();"
         >
             <option value="">JOPTION_SELECT_PUBLISHED</option>
@@ -20,20 +20,24 @@
 
         <field name="fullordering"
                type="list"
-               label="COM_RA_DEVELOP_LIST_FULL_ORDERING"
-               description="COM_RA_DEVELOP_LIST_FULL_ORDERING_DESC"
+               label="Sort By"
+               description="Select the column and direction to sort by"
                onchange="this.form.submit();"
                default="a.id DESC"
         >
-            <option value="">JGLOBAL_SORT_BY</option>
-            <option value="a.id ASC">COM_RA_DEVELOP_ID_ASC</option><option value="a.id DESC">COM_RA_DEVELOP_ID_DESC</option><option value="a.repository_name ASC">COM_RA_DEVELOP_REPOSITORY_NAME_ASC</option><option value="a.repository_name DESC">COM_RA_DEVELOP_REPOSITORY_NAME_DESC</option><option value="a.name ASC">COM_RA_DEVELOP_NAME_ASC</option><option value="a.name DESC">COM_RA_DEVELOP_NAME_DESC</option>
-
+            <option value="">- Sort By -</option>
+            <option value="a.id ASC">ID Ascending</option>
+            <option value="a.id DESC">ID Descending</option>
+            <option value="a.repository_name ASC">Repository Name Ascending</option>
+            <option value="a.repository_name DESC">Repository Name Descending</option>
+            <option value="a.name ASC">Name Ascending</option>
+            <option value="a.name DESC">Name Descending</option>
         </field>
 
        <field name="limit"
                type="limitbox"
-               label="COM_RA_DEVELOP_LIST_LIMIT"
-               description="COM_RA_DEVELOP_LIST_LIMIT_DESC"
+               label="Items Per Page"
+               description="Select the number of items to display per page"
                class="input-mini"
                default="25"
                onchange="this.form.submit();"

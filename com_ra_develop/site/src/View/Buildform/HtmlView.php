@@ -1,35 +1,37 @@
 <?php
 
 /**
- * @version    1.0.1
- * @package    com_ra_develop
- * @author     Barlie Chigley <charlie@bigley.me.uk>
+ * @version    CVS: 0.7.0
+ * @package    Com_Ra_develop
+ * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Ramblers\Component\Ra_develop\Site\View\Builds;
+namespace Ramblers\Component\Ra_develop\Site\View\Buildform;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 
 /**
  * View class for a list of Ra_develop.
  *
- * @since  0.1.0
+ * @since  0.7.0
  */
 class HtmlView extends BaseHtmlView
 {
-	protected $items;
-
-	protected $pagination;
-
 	protected $state;
 
+	protected $item;
+
+	protected $form;
+
 	protected $params;
+
+	protected $canSave;
 
 	/**
 	 * Display the view
@@ -42,14 +44,14 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$app = Factory::getApplication();
+		$app  = Factory::getApplication();
+		$user = $app->getIdentity();
 
-		$this->state = $this->get('State');
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->params = $app->getParams('com_ra_develop');
-		$this->filterForm = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
+		$this->state   = $this->get('State');
+		$this->item    = $this->get('Item');
+		$this->params  = $app->getParams('com_ra_develop');
+		$this->canSave = $this->get('CanSave');
+		$this->form		= $this->get('Form');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -57,7 +59,10 @@ class HtmlView extends BaseHtmlView
 			throw new \Exception(implode("\n", $errors));
 		}
 
+		
+
 		$this->_prepareDocument();
+
 		parent::display($tpl);
 	}
 
@@ -120,17 +125,5 @@ class HtmlView extends BaseHtmlView
 		}
 
 		
-	}
-
-	/**
-	 * Check if state is set
-	 *
-	 * @param   mixed  $state  State
-	 *
-	 * @return bool
-	 */
-	public function getState($state)
-	{
-		return isset($this->state->{$state}) ? $this->state->{$state} : false;
 	}
 }

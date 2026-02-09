@@ -14,8 +14,6 @@
             <option value="">JOPTION_SELECT_PUBLISHED</option>
         </field>
 
-        
-
     </fields>
 
     <fields name="list">
@@ -30,17 +28,17 @@
             <option value="">- Sort By -</option>
             <option value="a.id ASC">ID Ascending</option>
             <option value="a.id DESC">ID Descending</option>
-            <option value="a.build_date ASC">Build Date Ascending</option>
-            <option value="a.build_date DESC">Build Date Descending</option>
-            <option value="a.environment ASC">Environment Ascending</option>
-            <option value="a.environment DESC">Environment Descending</option>
-            <option value="a.component_id ASC">Component ID Ascending</option>
-            <option value="a.component_id DESC">Component ID Descending</option>
-            <option value="a.version_sort ASC">Version Ascending</option>
-            <option value="a.version_sort DESC">Version Descending</option>
+            <option value="a.subsystem_id ASC">Subsystem Ascending</option>
+            <option value="a.subsystem_id DESC">Subsystem Descending</option>
+            <option value="a.name ASC">Extension Name Ascending</option>
+            <option value="a.name DESC">Extension Name Descending</option>
+            <option value="s.name ASC">Subsystem Name Ascending</option>
+            <option value="s.name DESC">Subsystem Name Descending</option>
+            <option value="t.name ASC">Type Name Ascending</option>
+            <option value="t.name DESC">Type Name Descending</option>
         </field>
 
-       <field name="limit"
+        <field name="limit"
                type="limitbox"
                label="Items Per Page"
                description="Select the number of items to display per page"

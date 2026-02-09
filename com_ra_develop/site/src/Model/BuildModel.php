@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.1.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -19,7 +19,6 @@ use \Joomla\CMS\MVC\Model\ItemModel;
 use \Joomla\CMS\Helper\TagsHelper;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\User\UserFactoryInterface;
-use \Ramblers\Component\Ra_develop\Site\Helper\Ra_developHelper;
 
 /**
  * Ra_develop model.

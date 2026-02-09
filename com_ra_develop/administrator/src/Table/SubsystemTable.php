@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.2.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -23,7 +23,6 @@ use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\Registry\Registry;
-use \Ramblers\Component\Ra_develop\Administrator\Helper\Ra_developHelper;
 use \Joomla\CMS\Helper\ContentHelper;
 
 

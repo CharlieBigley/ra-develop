@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.0
+ * @version    1.0.1
  * @package    Com_Anand
  * @author     Super User <dev@component-creator.com>
  * @copyright  2023 Super User

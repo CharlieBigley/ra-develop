@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.1.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -18,7 +18,6 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Helper\TagsHelper;
 use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
-use Ramblers\Component\Ra_develop\Administrator\Helper\Ra_developHelper;
 
 /**
  * Methods supporting a list of Builds records.
@@ -48,11 +47,15 @@ class BuildsModel extends ListModel
 				'build_date', 'a.build_date',
 				'environment', 'a.environment',
 				'component_id', 'a.component_id',
-				'version', 'a.version',
+				'version', 'a.version_sort',
 			);
 		}
 
 		parent::__construct($config);
+		
+		// Load component language file for form translations
+		$lang = Factory::getApplication()->getLanguage();
+		$lang->load('com_ra_develop', JPATH_ADMINISTRATOR . '/components/com_ra_develop', 'en-GB', true);
 	}
 
 
@@ -140,9 +143,9 @@ class BuildsModel extends ListModel
 		);
 		$query->from('`#__ra_builds` AS a');
 		
-		// Join over the users for the checked out user
-		$query->select("uc.name AS uEditor");
-		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
+		$query->select('t.name AS extension_type');
+		$query->join('LEFT', '#__ra_extensions AS e ON e.name=a.component_name');
+		$query->join('LEFT', '#__ra_extension_types AS t ON t.id=e.extension_type_id');
 		
 
 		// Filter by published state
@@ -181,7 +184,9 @@ class BuildsModel extends ListModel
 		{
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		}
-
+        if (JDEBUG) {
+            Factory::getApplication()->enqueueMessage('sql = ' . $this->_db->replacePrefix($query), 'notice');
+        }
 		return $query;
 	}
 

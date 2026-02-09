@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.1.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -19,7 +19,6 @@ use \Joomla\CMS\Helper\TagsHelper;
 use \Joomla\CMS\Layout\FileLayout;
 use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
-use \Ramblers\Component\Ra_develop\Site\Helper\Ra_developHelper;
 
 
 /**
@@ -139,9 +138,9 @@ class BuildsModel extends ListModel
 
 			$query->from('`#__ra_builds` AS a');
 			
-		// Join over the users for the checked out user.
-		$query->select('uc.name AS uEditor');
-		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+		$query->select('t.name AS extension_type');
+		$query->join('LEFT', '#__ra_extensions AS e ON e.name=a.component_name');
+		$query->join('LEFT', '#__ra_extension_types AS t ON t.id=e.extension_type_id');
 			
 		if (!Factory::getApplication()->getIdentity()->authorise('core.edit', 'com_ra_develop'))
 		{

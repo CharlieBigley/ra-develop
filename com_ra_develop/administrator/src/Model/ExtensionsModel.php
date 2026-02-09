@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.4.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -40,13 +40,18 @@ class ExtensionsModel extends ListModel
 		{
 			$config['filter_fields'] = array(
 				'id', 'a.id',
+				'a.subsystem_id',
+				'a.name',
 				's.name',
 				't.name',
-				'a.name',
 			);
 		}
 
 		parent::__construct($config);
+		
+		// Load component language file for form translations
+		$lang = Factory::getApplication()->getLanguage();
+		$lang->load('com_ra_develop', JPATH_ADMINISTRATOR . '/components/com_ra_develop', 'en-GB', true);
 	}
 
 	/**

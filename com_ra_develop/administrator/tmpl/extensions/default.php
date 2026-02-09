@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.4.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -48,7 +48,7 @@ if (!empty($saveOrder))
 	<div class="row">
 		<div class="col-md-12">
 			<div id="j-main-container" class="j-main-container">
-			<?php //echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
+			<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 
 				<div class="clearfix"></div>
 				<table class="table table-striped" id="extensionList">
@@ -60,7 +60,7 @@ if (!empty($saveOrder))
 						</th>
 						
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'Sub system', 's.name', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Subsystem', 's.name', $listDirn, $listOrder); ?>
 						</th>					
 						
 						<th class='left'>

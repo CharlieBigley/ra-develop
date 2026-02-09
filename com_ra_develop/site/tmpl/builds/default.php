@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.3.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -48,25 +48,20 @@ $wa->useStyle('com_ra_develop.list');
 		<table class="table table-striped" id="extension_typeList">
 			<thead>
 			<tr>
-				
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_RA_DEVELOP_EXTENSION_TYPES_ID', 'a.id', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'Date', 'a.build_date', $listDirn, $listOrder); ?>
+					</th>				
+					<th class=''>
+						<?php echo HTMLHelper::_('grid.sort',  'Extension', 'a.component_name', $listDirn, $listOrder); ?>
 					</th>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'Date', 'a.build_date', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'Type', 'a.version', $listDirn, $listOrder); ?>
 					</th>
 
 					<th class=''>
 						<?php echo HTMLHelper::_('grid.sort',  'Version', 'a.version', $listDirn, $listOrder); ?>
 					</th>
-
-						<?php if ($canEdit || $canDelete): ?>
-					<th class="center">
-						<?php echo Text::_('COM_RA_DEVELOP_EXTENSION_TYPES_ACTIONS'); ?>
-					</th>
-					<?php endif; ?>
-
 			</tr>
 			</thead>
 			<tfoot>
@@ -83,16 +78,14 @@ $wa->useStyle('com_ra_develop.list');
 				<?php $canEdit = $user->authorise('core.edit', 'com_ra_develop'); ?>
 				
 				<tr class="row<?php echo $i % 2; ?>">
-					
-					<td>
-						<?php echo $item->id; ?>
-					</td>
-					<td>
-						<?php echo $item->build_date; ?>
-					</td>
-					<td>
-						<?php echo $item->version; ?>
-					</td>
+									
+						<?php 
+						echo '<td>' . HTMLHelper::_('date', $item->builddate, 'H:i d/m/y'). '</td>'; 
+						echo '<td>' . $item->component_name . '</td>'; 
+						echo '<td>' . $item->extension_type . '</td>'; 
+						echo '<td>' . $item->version . '</td>'; 						
+						?>
+				
 					<?php if ($canEdit || $canDelete): ?>
 						<td class="center">
 						</td>

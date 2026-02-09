@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 0.1.0
- * @package    Com_Ra_develop
+ * @version    1.0.1
+ * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -68,10 +68,10 @@ if (!empty($saveOrder))
 							<?php echo HTMLHelper::_('searchtools.sort',  'Environment', 'a.environment', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'Extension', 'a.component_id', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Extension', 'a.component_name', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'Type', 'a.component_id', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Type', 't.name', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
 							<?php echo HTMLHelper::_('searchtools.sort',  'Version', 'a.version', $listDirn, $listOrder); ?>
@@ -107,13 +107,11 @@ if (!empty($saveOrder))
 							<td>
 								<?php
 									$date = $item->build_date;
-									echo $date > 0 ? HTMLHelper::_('date', $date, Text::_('DATE_FORMAT_LC4')) : '-';
+									echo $date > 0 ? HTMLHelper::_('date', $date, 'H:i d/m/y') : '-';
 								?>
 							</td>
 							<td>
-								<?php if (isset($item->checked_out) && $item->checked_out && ($canEdit || $canChange)) : ?>
-									<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'builds.', $canCheckin); ?>
-								<?php endif; ?>
+
 								<?php if ($canEdit) : ?>
 									<a href="<?php echo Route::_('index.php?option=com_ra_develop&task=build.edit&id='.(int) $item->id); ?>">
 									<?php echo $this->escape($item->environment); ?>
@@ -123,10 +121,10 @@ if (!empty($saveOrder))
 								<?php endif; ?>
 							</td>
 							<td>
-								<?php echo $item->component_id; ?>
+								<?php echo $item->component_name ?>
 							</td>
 							<td>
-								<?php echo $item->type; ?>
+								<?php echo $item->extension_type; ?>
 							</td>
 							<td>
 								<?php echo $item->version; ?>

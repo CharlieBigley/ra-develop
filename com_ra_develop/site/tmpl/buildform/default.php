@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 0.6.0
+ * @version    CVS: 0.7.0
  * @package    Com_Ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
@@ -46,7 +46,7 @@ $canEdit = Ra_developHelper::canUserEdit($this->item, $user);
 		<?php if (!empty($this->item->id)): ?>
 			<h1><?php echo Text::sprintf('COM_RA_DEVELOP_EDIT_ITEM_TITLE', $this->item->id); ?></h1>
 		<?php else: ?>
-			<h1><?php echo Text::_('COM_RA_DEVELOP_ADD_ITEM_TITLE'); ?></h1>
+			<h1><?php echo 'Generate installation file'; ?></h1>
 		<?php endif; ?>
 
 		<form id="form-build"
@@ -59,17 +59,11 @@ $canEdit = Ra_developHelper::canUserEdit($this->item, $user);
 
 				<?php echo $this->form->getInput('created_by'); ?>
 				<?php echo $this->form->getInput('modified_by'); ?>
-	<?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'recipient')); ?>
-	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'recipient', Text::_('COM_RA_DEVELOP_TAB_RECIPIENT', true)); ?>
-	<?php echo $this->form->renderField('version'); ?>
 
 	<?php echo $this->form->renderField('component_name'); ?>
-
-	<?php echo $this->form->renderField('component_type_id'); ?>
-
+	<?php echo $this->form->renderField('version'); ?>		
 	<?php echo $this->form->renderField('replace'); ?>
 
-	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 			<div class="control-group">
 				<div class="controls">
 

@@ -5,7 +5,7 @@ CREATE TABLE `#__ra_builds` (
     `component_name` VARCHAR(50),
     `version`  VARCHAR(20),
     `version_sort` VARCHAR(22) NULL,
-    
+    `environment`  VARCHAR(20),
     `state` TINYINT(1)  NULL  DEFAULT 1,
     `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
     `created_by` INT NULL DEFAULT "0",
