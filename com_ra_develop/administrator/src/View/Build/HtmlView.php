@@ -80,7 +80,7 @@ class HtmlView extends BaseHtmlView
 
 		$canDo = ContentHelper::getActions('com_ra_develop');
 
-		ToolbarHelper::title(Text::_('COM_RA_DEVELOP_TITLE_BUILD'), "generic");
+		ToolbarHelper::title(Text::_('Build'), "generic");
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))

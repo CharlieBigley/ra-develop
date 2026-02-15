@@ -6,6 +6,7 @@ CREATE TABLE `#__ra_builds` (
     `version`  VARCHAR(20),
     `version_sort` VARCHAR(22) NULL,
     `environment`  VARCHAR(20),
+    `notes`  TEXT NULL,
     `state` TINYINT(1)  NULL  DEFAULT 1,
     `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   
     `created_by` INT NULL DEFAULT "0",

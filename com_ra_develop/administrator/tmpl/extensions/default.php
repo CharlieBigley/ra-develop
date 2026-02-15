@@ -70,7 +70,9 @@ if (!empty($saveOrder))
 						<th class='left'>
 						<?php echo HTMLHelper::_('searchtools.sort',  'Type', 't.name', $listDirn, $listOrder); ?>
 						</th>						
-						
+						<th class='left'>
+							<?php echo HTMLHelper::_('searchtools.sort',  'Version', 'b.version_sort', $listDirn, $listOrder); ?>
+						</th>						
 					<th scope="col" class="w-3 d-none d-lg-table-cell" >
 
 						<?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>					</th>
@@ -116,8 +118,18 @@ if (!empty($saveOrder))
 								<?php 
 								echo '<td>';
 								echo $item->type_name; 
+								echo '</td>';
+								echo '<td>';
+								// Convert version_sort back to readable format (e.g., "010002003" -> "1.2.3")
+								if (!empty($item->max_version_sort) && strlen($item->max_version_sort) === 7) {
+									$major = (int)substr($item->max_version_sort, 0, 2);
+									$minor = (int)substr($item->max_version_sort, 2, 2);
+									$patch = (int)substr($item->max_version_sort, 4, 3);
+									echo sprintf('%d.%d.%d', $major, $minor, $patch);
+								} else {
+									echo $item->max_version_sort;
+								}
 								echo '</td>'
-
 								?>	
 
 						

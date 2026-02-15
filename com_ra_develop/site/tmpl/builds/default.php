@@ -80,7 +80,7 @@ $wa->useStyle('com_ra_develop.list');
 				<tr class="row<?php echo $i % 2; ?>">
 									
 						<?php 
-						echo '<td>' . HTMLHelper::_('date', $item->builddate, 'H:i d/m/y'). '</td>'; 
+						echo '<td>' . HTMLHelper::_('date', $item->build_date, 'H:i d/m/y'). '</td>'; 
 						echo '<td>' . $item->component_name . '</td>'; 
 						echo '<td>' . $item->extension_type . '</td>'; 
 						echo '<td>' . $item->version . '</td>'; 						

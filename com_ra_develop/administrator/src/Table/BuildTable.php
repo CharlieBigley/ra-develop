@@ -107,8 +107,8 @@ class BuildTable extends Table implements VersionableTableInterface, TaggableTab
 		// Support for empty date field: build_date
 		if($array['build_date'] == '0000-00-00' || empty($array['build_date']))
 		{
-			$array['build_date'] = NULL;
-			$this->build_date = NULL;
+			$array['build_date'] = Factory::getDate('now', Factory::getConfig()->get('offset'))->toSql(true);
+			$this->build_date = $array['build_date'];
 		}
 
 		// Generate version_sort from version field (format: XX.XX.XXX for proper sorting)

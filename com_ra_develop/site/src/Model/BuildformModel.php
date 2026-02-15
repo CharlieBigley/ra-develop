@@ -17,7 +17,8 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\MVC\Model\FormModel;
 use \Joomla\CMS\Object\CMSObject;
-use \Joomla\CMS\Helper\TagsHelper;
+use \Joomla\CMS\Component\ComponentHelper;
+use Ramblers\Component\Ra_tools\Site\Helpers\ToolsHelper;
 
 /**
  * Ra_develop model.
@@ -34,24 +35,32 @@ class BuildformModel extends FormModel
      */
     private function build($component, $version)
     {
-        // Get the ra-tools root directory (6 levels up: site/src/Model from ra-tools root)
-        $scriptDir = dirname(dirname(dirname(dirname(__FILE__))));
-        $componentDir = $scriptDir . '/' . $component;
-        
+        // Get the git root directory from component parameters
+        $params = ComponentHelper::getParams('com_ra_develop');
+        $git_base = $params->get('git_base');
+		
+		// Get the subsystem from the component name by querying the database
+		$toolsHelper = new ToolsHelper;
+		$sql = 'SELECT sub_system.repository_name ';
+		$sql .= 'FROM `#__ra_sub_systems` AS sub_system ';
+		$sql .= 'INNER JOIN `#__ra_extensions` AS ext ON ext.subsystem_id = sub_system.id ';
+		$sql .= 'WHERE ext.name="' . $component . '"';
+		$sub_system = $toolsHelper->getValue($sql);
+		
+        $componentDir = $git_base .'/'. $sub_system . '/' . $component;
         // Validate component directory exists
         if (!is_dir($componentDir)) {
             echo "Error: Component directory not found: $componentDir\n";
             return false;
         }
-        
+        $manifest_directory = $componentDir . '/administrator';
         // Extract the manifest filename from component name (com_ra_tools -> ra_tools)
         $manifestName = preg_replace('/^com_/', '', $component);
         
         echo "Starting build for component: $component, version: $version\n";
-        echo "Script directory: $scriptDir\n";
+        echo "Manifest directory: $manifest_directory\n";
         echo "Component directory: $componentDir\n";
         echo "Manifest name: $manifestName\n";
-        die(); 
         // Change to component directory
         if (!chdir($componentDir)) {
             echo "Error: Could not change to directory: $componentDir\n";
@@ -60,7 +69,7 @@ class BuildformModel extends FormModel
         
         echo "Building $component-$version.zip...\n";
         
-        $sourceManifest = 'administrator/' . $manifestName . '.xml';
+        $sourceManifest = $manifest_directory . '/' . $manifestName . '.xml';
       
         if (!file_exists($sourceManifest)) {
             echo "Error: Source manifest file not found: $sourceManifest\n";
@@ -83,7 +92,7 @@ class BuildformModel extends FormModel
         
         // Directories to include in the zip - discover dynamically
         $dirsToInclude = [];
-        $excludeDirs = ['.', '..', '.git', '.gitignore', '.DS_Store'];
+        $excludeDirs = ['.', '..', '.git', '.gitignore', '.DS_Store','nbproject'];
         
         // Scan for all directories in the component folder
         $items = scandir('.');
@@ -99,7 +108,13 @@ class BuildformModel extends FormModel
         // Add files
         foreach ($filesToInclude as $file) {
             if (file_exists($file)) {
-                $zip->addFile($file, $file);
+                // Use relative path for manifest file in zip
+                if (strpos($file, 'administrator/') === 0) {
+                    $zipPath = $file;
+                } else {
+                    $zipPath = basename($file);
+                }
+                $zip->addFile($file, $zipPath);
             } else {
 				echo "Warning: File not found and will be skipped: $file\n";
 			}
@@ -485,7 +500,9 @@ class BuildformModel extends FormModel
 			throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 		}
 		// Generate the installation file
-		$this->build($data['component_name'], $data['version']);
+		if (!$this->build($data['component_name'], $data['version'])){
+			die;
+		}
 		$table = $this->getTable();
 
 		if(!empty($id))

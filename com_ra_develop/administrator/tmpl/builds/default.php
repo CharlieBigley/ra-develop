@@ -73,9 +73,6 @@ if (!empty($saveOrder))
 						<th class='left'>
 							<?php echo HTMLHelper::_('searchtools.sort',  'Type', 't.name', $listDirn, $listOrder); ?>
 						</th>
-						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'Version', 'a.version', $listDirn, $listOrder); ?>
-						</th>
 						
 					<th scope="col" class="w-3 d-none d-lg-table-cell" >
 
@@ -128,8 +125,7 @@ if (!empty($saveOrder))
 							</td>
 							<td>
 								<?php echo $item->version; ?>
-							</td>
-							
+							</td> 						
 							<td class="d-none d-lg-table-cell">
 							<?php echo $item->id; ?>
 

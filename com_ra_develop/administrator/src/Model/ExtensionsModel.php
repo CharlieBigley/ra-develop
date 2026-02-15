@@ -132,12 +132,15 @@ class ExtensionsModel extends ListModel
 
 		// Get the sub system
 		$query->select("s.name AS subsystem_name");
+		$query->select("MAX(b.version_sort) AS max_version_sort");
 		$query->join("LEFT", "#__ra_sub_systems AS s ON s.id=a.subsystem_id");
+		$query->join("LEFT", "#__ra_builds AS b ON b.component_name=a.name");
+		
 
 		// Get the extension type
 		$query->select("t.name AS type_name");
 		$query->join("LEFT", "#__ra_extension_types AS t ON t.id=a.extension_type_id");
-
+		$query->group("t.name, s.name,a.name");
 		// Filter by published state
 		$published = $this->getState('filter.state');
 

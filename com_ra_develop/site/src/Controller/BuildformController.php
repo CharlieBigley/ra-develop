@@ -166,7 +166,12 @@ class BuildformController extends FormController
 		// Redirect to the list screen.
 		if (!empty($return))
 		{
-			$this->setMessage(Text::_('COM_RA_DEVELOP_ITEM_SAVED_SUCCESSFULLY'));
+			$message = sprintf(
+				'Build created: %s v%s',
+				isset($data['component_name']) ? $data['component_name'] : 'Unknown',
+				isset($data['version']) ? $data['version'] : 'Unknown'
+			);
+			$this->setMessage($message);
 		}
 		
 		$menu = Factory::getApplication()->getMenu();

@@ -24,12 +24,12 @@
         >
             <option value="">-- Select a component --</option>
         </field>
-    <field name="component_name2" maxlength="30" 
-    filter="safehtml" type="text"  
-    label="Component Name" 
-     default="com_ra_events"
-    description="Name of the component to build, e.g. com_ra_events" 
-    hint="COM_RA_DEVELOP_FORM_LBL_BUILD_COMPONENT_NAME"/>
+        <field name="note" maxlength="30" 
+          filter="safehtml" type="editor"  
+          label="Note" 
+          default="com_ra_events"
+          description="Brief details" 
+          />
         <field
             name="version"
             type="text"

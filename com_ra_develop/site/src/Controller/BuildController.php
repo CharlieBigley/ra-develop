@@ -261,8 +261,17 @@ public function test(){
 			// Flush the data from the session.
 			$this->app->setUserState('com_ra_develop.edit.build.data', null);
 
+			// Get the build item to show version details
+			$buildItem = $model->getItem($id);
+			$message = sprintf(
+				'Build %s: %s v%s',
+				$state === 1 ? 'published' : ($state === 0 ? 'unpublished' : 'archived'),
+				$buildItem->component_name ?? 'Unknown',
+				$buildItem->version ?? 'Unknown'
+			);
+			
 			// Redirect to the list screen.
-			$this->setMessage(Text::_('COM_RA_DEVELOP_ITEM_SAVED_SUCCESSFULLY'));
+			$this->setMessage($message);
 			$menu = Factory::getApplication()->getMenu();
 			$item = $menu->getActive();
 
