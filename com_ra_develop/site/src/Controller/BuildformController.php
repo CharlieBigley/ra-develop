@@ -64,7 +64,44 @@ class BuildformController extends FormController
 		// Redirect to the edit screen.
 		$this->setRedirect(Route::_('index.php?option=com_ra_develop&view=buildform&layout=edit', false));
 	}
+	/**
+	 * Retrieves the version from the manifest file
+	 *
+	 * @return  string|null  The version string or null if not found
+	 *
+	 * @since   0.7.0
+	 */
+	private function getManifestVersion()
+	{
+		try
+		{
+			$manifestPath = JPATH_ADMINISTRATOR . '/components/com_ra_develop/ra_develop.xml';
 
+			if (!file_exists($manifestPath))
+			{
+				return null;
+			}
+
+			$manifest = simplexml_load_file($manifestPath);
+
+			if ($manifest === false)
+			{
+				return null;
+			}
+
+			// Get the version element
+			if (isset($manifest->version))
+			{
+				return (string) $manifest->version;
+			}
+
+			return null;
+		}
+		catch (\Exception $e)
+		{
+			return null;
+		}
+	}
 	/**
 	 * Method to save data.
 	 *
@@ -138,7 +175,6 @@ class BuildformController extends FormController
 
 		var_dump($data); // --- IGNORE ---
 		// Attempt to save the data.
-//		die('save'); // --- IGNORE ---
 		$return = $model->save($data);
 
 		// Check for errors.
@@ -278,4 +314,43 @@ class BuildformController extends FormController
     protected function postSaveHook(BaseDatabaseModel $model, $validData = array())
     {
     }
-}
+
+	/**
+	 * Validates that the version in form data matches the manifest version
+	 *
+	 * @param   array  $data  The form data containing version field
+	 *
+	 * @return  string|null  Error message if version doesn't match, null if valid
+	 *
+	 * @since   0.7.0
+	 */
+	private function validateVersionAgainstManifest($data)
+	{
+		// Get the manifest version
+		$manifestVersion = $this->getManifestVersion();
+
+		if ($manifestVersion === null)
+		{
+			return Text::_('COM_RA_DEVELOP_ERROR_COULD_NOT_READ_MANIFEST');
+		}
+
+		// Get the submitted version
+		$submittedVersion = isset($data['version']) ? trim($data['version']) : '';
+
+		if (empty($submittedVersion))
+		{
+			return Text::_('COM_RA_DEVELOP_ERROR_VERSION_REQUIRED');
+		}
+
+		// Compare versions
+		if ($submittedVersion !== $manifestVersion)
+		{
+			return Text::sprintf(
+				'COM_RA_DEVELOP_ERROR_VERSION_MISMATCH %1$d',
+				$manifestVersion
+			);
+		}
+
+		return null;
+	}
+	}

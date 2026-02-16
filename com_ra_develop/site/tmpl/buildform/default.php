@@ -57,11 +57,9 @@ $canEdit = Ra_developHelper::canUserEdit($this->item, $user);
 
 	<input type="hidden" name="jform[state]" value="<?php echo isset($this->item->state) ? $this->item->state : ''; ?>" />
 
-				<?php echo $this->form->getInput('created_by'); ?>
-				<?php echo $this->form->getInput('modified_by'); ?>
-
 	<?php echo $this->form->renderField('component_name'); ?>
 	<?php echo $this->form->renderField('version'); ?>		
+	<?php echo $this->form->renderField('notes'); ?>		
 	<?php echo $this->form->renderField('replace'); ?>
 
 			<div class="control-group">
@@ -74,7 +72,7 @@ $canEdit = Ra_developHelper::canUserEdit($this->item, $user);
 						</button>
 					<?php endif; ?>
 					<a class="btn btn-danger"
-					   href="<?php echo Route::_('index.php?option=com_ra_develop&task=buildform.cancel'); ?>"
+					   href="<?php echo Route::_('index.php?option=com_ra_develop&view=builds'); ?>"
 					   title="<?php echo Text::_('JCANCEL'); ?>">
 					   <span class="fas fa-times" aria-hidden="true"></span>
 						<?php echo Text::_('JCANCEL'); ?>

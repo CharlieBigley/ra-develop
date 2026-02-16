@@ -1,9 +1,9 @@
 <?php
 /**
- * @version    1.0.1
- * @package    com_ra_develop
- * @author     Charlie Bigley <charlie@bigley.me.uk>
- * @copyright  2026 Charlie Bigley
+ * @version    CVS: 1.0.0
+ * @package    Com_Hy_schema
+ * @author     Charlie Bigley <webmaster@bigley.me.uk>
+ * @copyright  2024 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -18,7 +18,7 @@ use \Joomla\CMS\User\UserFactoryInterface;
 /**
  * Supports an HTML select list of categories
  *
- * @since  0.3.0
+ * @since  1.0.0
  */
 class CreatedbyField extends FormField
 {
@@ -26,7 +26,7 @@ class CreatedbyField extends FormField
 	 * The form field type.
 	 *
 	 * @var    tring
-	 * @since  0.3.0
+	 * @since  1.0.0
 	 */
 	protected $type = 'createdby';
 
@@ -35,7 +35,7 @@ class CreatedbyField extends FormField
 	 *
 	 * @return  string    The field input markup.
 	 *
-	 * @since   0.3.0
+	 * @since   1.0.0
 	 */
 	protected function getInput()
 	{

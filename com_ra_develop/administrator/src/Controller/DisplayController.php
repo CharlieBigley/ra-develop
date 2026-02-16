@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version    1.0.2
- * @package    com_ra_develop
- * @author     Charlie Bigley <charlie@bigley.me.uk>
- * @copyright  2026 Charlie Bigley
+ * @version    CVS: 1.0.0
+ * @package    Com_Ra_develop
+ * @author     Charlie Bigley <webmaster@bigley.me.uk>
+ * @copyright  2024 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -19,7 +19,7 @@ use Joomla\CMS\Router\Route;
 /**
  * Ra_develop master display controller.
  *
- * @since  0.3.0
+ * @since  1.0.0
  */
 class DisplayController extends BaseController
 {
@@ -27,9 +27,9 @@ class DisplayController extends BaseController
 	 * The default view.
 	 *
 	 * @var    string
-	 * @since  0.3.0
+	 * @since  1.0.0
 	 */
-	protected $default_view = 'builds';
+	protected $default_view = 'report';
 
 	/**
 	 * Method to display a view.
@@ -39,7 +39,7 @@ class DisplayController extends BaseController
 	 *
 	 * @return  BaseController|boolean  This object to support chaining.
 	 *
-	 * @since   0.3.0
+	 * @since   1.0.0
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{

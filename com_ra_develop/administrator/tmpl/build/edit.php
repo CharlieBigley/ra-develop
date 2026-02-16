@@ -34,6 +34,7 @@ HTMLHelper::_('bootstrap.tooltip');
 				<?php echo $this->form->renderField('component_name'); ?>
 				<?php echo $this->form->renderField('version'); ?>
 				<?php echo $this->form->renderField('version_sort'); ?>
+				<?php echo $this->form->renderField('notes'); ?>
 			</fieldset>
 		</div>
 	</div>

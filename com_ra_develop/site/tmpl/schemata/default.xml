@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Show list of tables with the given prefix" option="View">
+        <message>
+                        <![CDATA[Show list of tables]]>
+        </message>
+	</layout>
+    <config>
+	<fields name="params">
+            <fieldset name="basic"> 
+
+                <field name="note2" type="note" label="Specify the two character area code"/>
+                    <field name="prefix" type="text" default="ra" size="2" label="Prefix" description="Specify the characters that will restrict the list of tables" />
+
+            </fieldset>
+    	</fields>
+    </config>	
+</metadata>

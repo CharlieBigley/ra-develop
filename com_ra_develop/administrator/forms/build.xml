@@ -7,7 +7,7 @@
     <field name="checked_out_time" type="hidden" filter="unset"/>
     <field name="build_date" class="inputbox" format="%Y-%m-%d" timeformat="24" 
     filter="server_utc" translateformat="false" 
-    showtime="true" singleheader="false" todaybutton="false" 
+    showtime="true" singleheader="false" todaybutton="true" 
     weeknumbers="false" filltable="false" type="calendar" 
     label="Build date" description="Date the file was created" />
     <field name="environment"
@@ -38,6 +38,11 @@
             readonly="true"
 
         />
+    <field name="notes"  
+      filter="safehtml" type="editor"  
+      label="Notes" 
+      description="Brief details about this build" 
+      />
     <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
   </fieldset>
 </form>

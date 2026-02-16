@@ -53,28 +53,46 @@ class BuildformModel extends FormModel
             echo "Error: Component directory not found: $componentDir\n";
             return false;
         }
-        $manifest_directory = $componentDir . '/administrator';
-        // Extract the manifest filename from component name (com_ra_tools -> ra_tools)
-        $manifestName = preg_replace('/^com_/', '', $component);
+		if (substr($component, 0, 4) === 'com_') {
+        	$manifest_directory = $componentDir . '/administrator';
+			// Extract the manifest filename from component name (com_ra_tools -> ra_tools)
+			$manifestName = preg_replace('/^com_/', '', $component);
+		} else {
+			$manifest_directory = $componentDir;
+			$manifestName = $component;
+		}
         
-        echo "Starting build for component: $component, version: $version\n";
-        echo "Manifest directory: $manifest_directory\n";
-        echo "Component directory: $componentDir\n";
-        echo "Manifest name: $manifestName\n";
+        echo "Starting build for component: $component, version: $version<br>";
+        echo "Manifest directory: $manifest_directory<br>";
+        echo "Component directory: $componentDir<br>";
+        echo "Manifest name: $manifestName<br>";
+		$sourceManifest = $manifest_directory . '/' . $manifestName . '.xml';
+        if (!file_exists($sourceManifest)) {
+            return "Error: Source manifest file not found: $sourceManifest\n";
+        }
+
+		// Get the manifest version
+		$manifestVersion = $this->getManifestVersion($sourceManifest);
+		if ($manifestVersion === null)
+		{
+			return $manifestVersion;
+//			return Text::_('COM_RA_DEVELOP_ERROR_COULD_NOT_READ_MANIFEST') . '<br>';
+		}
+		// Compare versions
+		if ($version !== $manifestVersion)
+		{
+			return 'Manifest version is ' . $manifestVersion;
+//		return Text::sprintf(
+//				'COM_RA_DEVELOP_ERROR_VERSION_MISMATCH %1$d',
+//				$manifestVersion
+//			);
+		}		
         // Change to component directory
         if (!chdir($componentDir)) {
-            echo "Error: Could not change to directory: $componentDir\n";
-            return false;
+            return "Error: Could not change to directory: $componentDir\n";
         }
         
         echo "Building $component-$version.zip...\n";
-        
-        $sourceManifest = $manifest_directory . '/' . $manifestName . '.xml';
-      
-        if (!file_exists($sourceManifest)) {
-            echo "Error: Source manifest file not found: $sourceManifest\n";
-            return false;
-        }
         
         // Create zip with required folders, manifest, and script
         echo "  - Compressing files...\n";
@@ -83,11 +101,10 @@ class BuildformModel extends FormModel
         $zip = new \ZipArchive();
         
         if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-            echo "Error: Could not create zip file\n";
             if (file_exists($destManifest)) {
                 unlink($destManifest);
             }
-            return false;
+            return "Error: Could not create zip file\n";
         }
         
         // Directories to include in the zip - discover dynamically
@@ -129,21 +146,21 @@ class BuildformModel extends FormModel
         	}
         }
 
-        
         $zip->close();
         
         // Step 3: Verify zip was created
         if (file_exists($zipFile)) {
             echo "✓ Package created successfully: $zipFile\n";
-                    
+            Factory::getApplication()->enqueueMessage(  '✓ Created installation file: ' . $zipFile, 'info');
+        
             echo "✓ Build complete\n";
             return true;
         } else {
-            echo "✗ Error: Failed to create zip file\n";
             if (file_exists($destManifest)) {
                 unlink($destManifest);
             }
-            return false;
+			Factory::getApplication()->enqueueMessage(  '✗ Failed to create installation file: ' . $zipFile, 'error');
+            return "✗ Error: Failed to create zip file\n";
         }
     }
 
@@ -321,20 +338,6 @@ class BuildformModel extends FormModel
 	}
 
 	/**
-	 * Method to get the table
-	 *
-	 * @param   string $type   Name of the Table class
-	 * @param   string $prefix Optional prefix for the table class name
-	 * @param   array  $config Optional configuration array for Table object
-	 *
-	 * @return  Table|boolean Table if found, boolean false on failure
-	 */
-	public function getTable($type = 'Build', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
-
-	/**
 	 * Get an item by alias
 	 *
 	 * @param   string $alias Alias string
@@ -387,6 +390,60 @@ class BuildformModel extends FormModel
 		}
 
 		return $form;
+	}
+
+		/**
+	 * Retrieves the version from the manifest file
+	 *
+	 * @return  string|null  The version string or null if not found
+	 *
+	 * @since   0.7.0
+	 */
+	private function getManifestVersion($manifestName)
+	{
+
+		try
+		{
+
+			if (!file_exists($manifestName))
+			{
+				Factory::getApplication()->enqueueMessage($manifestName . ' does not exist', 'error');
+				return null;
+			}
+
+			$manifest = simplexml_load_file($manifestName);
+			if ($manifest === false)
+			{
+				Factory::getApplication()->enqueueMessage('Failed to parse manifest file: ' . $manifestName, 'error');
+				return null;
+			}
+
+			// Get the version element
+			if (isset($manifest->version))
+			{
+				return (string) $manifest->version;
+			}
+
+			return null;
+		}
+		catch (\Exception $e)
+		{
+			return null;
+		}
+	}
+
+		/**
+	 * Method to get the table
+	 *
+	 * @param   string $type   Name of the Table class
+	 * @param   string $prefix Optional prefix for the table class name
+	 * @param   array  $config Optional configuration array for Table object
+	 *
+	 * @return  Table|boolean Table if found, boolean false on failure
+	 */
+	public function getTable($type = 'Build', $prefix = 'Administrator', $config = array())
+	{
+		return parent::getTable($type, $prefix, $config);
 	}
 
 	/**
@@ -500,8 +557,10 @@ class BuildformModel extends FormModel
 			throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 		}
 		// Generate the installation file
-		if (!$this->build($data['component_name'], $data['version'])){
-			die;
+		$response = $this->build($data['component_name'], $data['version']);
+		if ($response !== true){
+			Factory::getApplication()->enqueueMessage($response, 'error');
+			return false;
 		}
 		$table = $this->getTable();
 
