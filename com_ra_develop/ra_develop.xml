@@ -71,6 +71,11 @@
     <plugins>
     </plugins>
     
+    <api>
+        <files folder="api">
+            <folder>src</folder>
+        </files>
+    </api>
 
     <updateservers>
         <server type="extension" priority="1" name="com_ra_develop">https://nocdn.component-creator.com/index.php?task=builder.preupdatecheckhook&amp;option=com_combuilder&amp;component=NzU3NTctMjE2NjI3</server>

@@ -14,7 +14,7 @@ Each API setup requires two parts:
 - Version: 1.0.0
 
 ### 2. Component API Code
-- Located in: `{parent_project}/com_ra_{project}/src/Api`
+- Located in: `{parent_project}/com_ra_{project}/api`
 - Contains Controllers and Views for handling API requests
 - Namespace: `Ramblers\Component\Ra_{project}\Api`
 
@@ -46,34 +46,34 @@ SQL: SELECT DISTINCT a.*, t.name AS extension_type
 ```
 
 This results in:
-- Plugin: `plg_ra_develop`
-- Component Code: `com_ra_develop/src/Api`
+- Plugin: `ra-develop/plg_ra_develop`
+- Component Code: `ra-develop/com_ra_develop/api`
 
-## Plugin File Structure
-
-```
-plg_ra_develop/
-├── plg_ra_develop.xml          # Manifest
-├── services/
-│   └── provider.php             # Service provider
-├── src/
-│   └── Extension/
-│       └── Ra_develop.php       # Main plugin class
-└── language/
-    └── en-GB/
-        ├── plg_webservices_ra_develop.ini
-        └── plg_webservices_ra_develop.sys.ini
-```
-
-## Component API File Structure
+## Directory Structure
 
 ```
-com_ra_develop/src/Api/
-├── Controller/
-│   └── BuildsController.php     # API controller for the table
-└── View/
-    └── Builds/
-        └── JsonapiView.php      # JSON API view with field definitions
+ra-develop/
+├── com_ra_develop/
+│   ├── api/
+│   │   └── src/
+│   │       ├── Controller/
+│   │       │   └── BuildsController.php         # API controller for the table
+│   │       └── View/
+│   │           └── Builds/
+│   │               └── JsonapiView.php          # JSON API view with field definitions
+│   └── [other component folders]
+│
+└── plg_ra_develop/
+    ├── plg_ra_develop.xml                   # Manifest
+    ├── services/
+    │   └── provider.php                     # Service provider
+    ├── src/
+    │   └── Extension/
+    │       └── Ra_develop.php               # Main plugin class
+    └── language/
+        └── en-GB/
+            ├── plg_webservices_ra_develop.ini
+            └── plg_webservices_ra_develop.sys.ini
 ```
 
 ## Field Definitions
@@ -143,8 +143,8 @@ Create the plugin directory with:
 
 ### Step 3: Create Component API Code
 Create:
-- API Controller (BuildsController.php)
-- JSON API View (Builds/JsonapiView.php)
+- API Controller (`com_ra_develop/api/src/Controller/BuildsController.php`)
+- JSON API View (`com_ra_develop/api/src/View/Builds/JsonapiView.php`)
 
 ### Step 4: Register API Routes
 In the plugin's Extension class, use:
@@ -189,6 +189,14 @@ Verify endpoints:
 ### Plugin Extension Class (src/Extension/Ra_develop.php)
 ```php
 <?php
+/**
+ * @version    1.0.0
+ * @package    com_ra_develop
+ * @author     Charlie Bigley <charlie@bigley.me.uk>
+ * @copyright  2026 Charlie Bigley
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 namespace Ramblers\Plugin\WebServices\Ra_develop\Extension;
 
 defined('_JEXEC') or die;
@@ -217,6 +225,14 @@ class Ra_develop extends CMSPlugin implements SubscriberInterface
 ### Plugin Service Provider (services/provider.php)
 ```php
 <?php
+/**
+ * @version    1.0.0
+ * @package    com_ra_develop
+ * @author     Charlie Bigley <charlie@bigley.me.uk>
+ * @copyright  2026 Charlie Bigley
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Extension\PluginInterface;
@@ -246,9 +262,17 @@ return new class () implements ServiceProviderInterface {
 };
 ```
 
-### API Controller (src/Api/Controller/BuildsController.php)
+### API Controller (api/src/Controller/BuildsController.php)
 ```php
 <?php
+/**
+ * @version    1.0.0
+ * @package    com_ra_develop
+ * @author     Charlie Bigley <charlie@bigley.me.uk>
+ * @copyright  2026 Charlie Bigley
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 namespace Ramblers\Component\Ra_develop\Api\Controller;
 
 defined('_JEXEC') or die;
@@ -262,9 +286,17 @@ class BuildsController extends ApiController
 }
 ```
 
-### JSON API View (src/Api/View/Builds/JsonapiView.php)
+### JSON API View (api/src/View/Builds/JsonapiView.php)
 ```php
 <?php
+/**
+ * @version    1.0.0
+ * @package    com_ra_develop
+ * @author     Charlie Bigley <charlie@bigley.me.uk>
+ * @copyright  2026 Charlie Bigley
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 namespace Ramblers\Component\Ra_develop\Api\View\Builds;
 
 defined('_JEXEC') or die;
@@ -317,7 +349,7 @@ To regenerate this API plugin in a future session:
 2. Specify the table: `Builds`
 3. Supply the SQL: The query above
 4. The system will recreate:
-   - `com_ra_develop/plg_ra_develop/` - The plugin
-   - `com_ra_develop/src/Api/` - The component API code
+   - `ra-develop/plg_ra_develop/` - The plugin
+   - `ra-develop/com_ra_develop/api/` - The component API code
 
 All files will be generated using the templates above, with values substituted appropriately.
