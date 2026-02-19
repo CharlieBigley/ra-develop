@@ -31,6 +31,8 @@ class HtmlView extends BaseHtmlView
 
 	protected $params;
 
+	protected $site;
+
 	/**
 	 * Display the view
 	 *
@@ -56,6 +58,9 @@ class HtmlView extends BaseHtmlView
 		{
 			throw new \Exception(implode("\n", $errors));
 		}
+
+		// Populate site data if in remote mode
+		$this->site = $this->getSiteData();
 
 		$this->_prepareDocument();
 		parent::display($tpl);
@@ -132,5 +137,44 @@ class HtmlView extends BaseHtmlView
 	public function getState($state)
 	{
 		return isset($this->state->{$state}) ? $this->state->{$state} : false;
+	}
+
+	/**
+	 * Get remote site data if in remote mode
+	 *
+	 * @return object|null Site object with url, background_color, or null if local mode
+	 */
+	private function getSiteData()
+	{
+		// Only fetch site data if in remote mode
+		if ($this->getState('data.source') !== 'remote')
+		{
+			return null;
+		}
+
+		$remoteSiteId = $this->getState('data.remote_site_id');
+
+		if (empty($remoteSiteId))
+		{
+			return null;
+		}
+
+		try
+		{
+			$db = Factory::getDbo();
+			$query = $db->getQuery(true)
+				->select('*')
+				->from($db->quoteName('#__ra_api_sites'))
+				->where('id = ' . (int) $remoteSiteId);
+
+			$site = $db->setQuery($query)->loadObject();
+
+			return $site;
+		}
+		catch (\Exception $e)
+		{
+			Factory::getApplication()->enqueueMessage('Error loading remote site data: ' . $e->getMessage(), 'error');
+			return null;
+		}
 	}
 }

@@ -34,6 +34,13 @@ $canDelete  = $user->authorise('core.delete', 'com_ra_develop');
 // Import CSS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_ra_develop.list');
+
+// Determine background style for remote sites
+$tableStyle = '';
+if (!empty($this->site) && !empty($this->site->background_color))
+{
+	$tableStyle = 'style="background-color: ' . htmlspecialchars($this->site->background_color) . ';"';
+}
 ?>
 
 <?php if ($this->params->get('show_page_heading')) : ?>
@@ -44,7 +51,7 @@ $wa->useStyle('com_ra_develop.list');
 <form action="<?php echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
 	  name="adminForm" id="adminForm">
 	<?php if(!empty($this->filterForm)) { echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); } ?>
-	<div class="table-responsive">
+	<div class="table-responsive" <?php echo $tableStyle; ?>>
 		<table class="table table-striped" id="extension_typeList">
 			<thead>
 			<tr>
@@ -85,12 +92,6 @@ $wa->useStyle('com_ra_develop.list');
 						echo '<td>' . $item->extension_type . '</td>'; 
 						echo '<td>' . $item->version . '</td>'; 						
 						?>
-				
-					<?php if ($canEdit || $canDelete): ?>
-						<td class="center">
-						</td>
-					<?php endif; ?>
-
 				</tr>
 			<?php endforeach; ?>
 			</tbody>

@@ -4,6 +4,31 @@
         <message>
                         <![CDATA[List Builds of the extensions]]>
         </message>
-	</layout>
-	
+        </layout>
+    <config>
+	<fields name="params">
+            <fieldset name="basic"> 
+                <field name="data_source" type="list" label="Data Source" description="Query local database or remote API site" 
+                        default="local" class="inputbox">
+                        <option value="">-- Filter by Data Source --</option>
+                        <option value="local">Show records from Local Database</option>
+                        <option value="remote">Remote Site API</option>
+                        </field>
+                <field 
+                        name="remote_site_id"
+                        type="sql"
+                        label="Remote Site"
+                        description="Select remote site to query"
+                        query="SELECT `id`, `url` FROM #__ra_api_sites ORDER BY `url`"
+                        key_field="id"
+                        value_field="url"
+                        default=""
+                        class="inputbox"
+                        showon="data_source:remote"
+                >
+                <option value="">-- Select a remote site --</option>
+                </field>
+            </fieldset>
+    	</fields>
+    </config>	
 </metadata>
