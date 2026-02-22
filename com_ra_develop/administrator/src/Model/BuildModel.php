@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    1.0.1
+ * @version    1.0.11
  * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley

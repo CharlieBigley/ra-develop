@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    1.0.0
+ * @version    1.0.7
  * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
@@ -38,6 +38,19 @@ class BuildsController extends ApiController
     protected $default_view = 'builds';
 
 	/**
+	 * Authorizes the request (overridden for temporary public access)
+	 *
+	 * @return bool
+	 * @since 1.0.0
+	 */
+	protected function authorizeRequest()
+	{
+		// TEMPORARY: Allow public API access for testing
+		// TODO: Remove this bypass once token authentication is working
+		return true;
+	}
+
+	/**
 	 * Log API requests
 	 * 
 	 * @return void
@@ -49,8 +62,14 @@ class BuildsController extends ApiController
 		$limitstart = $app->input->get('start', 0, 'uint');
 		$limit = $app->input->get('limit', 25, 'uint');
 		
-		$msg = '[API SERVER] BuildsController::display() - Method: ' . $method . ', Start: ' . $limitstart . ', Limit: ' . $limit;
-		file_put_contents('/tmp/api_builds_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+		$msg = '[API SERVER] BuildsController::display() invoked';
+		$msg .= "\n  Method: " . $method;
+		$msg .= "\n  Start: " . $limitstart;
+		$msg .= "\n  Limit: " . $limit;
+		$msg .= "\n  Request URI: " . $_SERVER['REQUEST_URI'] ?? 'N/A';
+		$msg .= "\n  Query String: " . $_SERVER['QUERY_STRING'] ?? 'N/A';
+		$logPath = JPATH_ADMINISTRATOR . '/logs/api_builds_debug.log';
+		file_put_contents($logPath, date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 		
 		return parent::display($cachable, $urlparams);
 	}

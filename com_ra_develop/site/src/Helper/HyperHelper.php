@@ -3,7 +3,7 @@
 /**
  * Various common functions used throughout the project
  *
- * @version     1.0.13
+ * @version     1.0.11
  * @package     com_ra_tools
  * @author charlie
 

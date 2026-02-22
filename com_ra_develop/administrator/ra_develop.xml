@@ -2,15 +2,16 @@
 <extension type="component" version="4.0" method="upgrade">
     <name>RA Develop</name>
     <element>com_ra_develop</element>    
-    <creationDate>2026-02-18</creationDate>
+    <creationDate>2026-02-21</creationDate>
     <copyright>2026 Charlie Bigley</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <author>Charlie Bigley</author>
     <authorEmail>charlie@bigley.me.uk</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>1.0.6</version>
+    <version>1.0.12</version>
     <description>Tools to assist development process</description>
     <namespace path="src">Ramblers\Component\Ra_develop</namespace>
+    <namespace path="api/src">Ramblers\Component\Ra_develop\Api</namespace>
      
     <install> <!-- Runs on install -->
         <sql>
@@ -61,6 +62,11 @@
 			<language tag="en-GB">en-GB/com_ra_develop.sys.ini</language>
         </languages>
     </administration>
+    <api>
+        <files folder="api">
+            <folder>src</folder>
+        </files>
+    </api>
     <config>
         <fields name="params">
             <fieldset name="component">

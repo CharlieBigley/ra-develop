@@ -2,12 +2,12 @@
 <extension type="plugin" group="webservices" method="upgrade">
     <name>PLG_WEBSERVICES_PLG_RA_DEVELOP</name>
     <author>Charlie Bigley</author>
-    <creationDate>16 Feb 2026</creationDate>
+    <creationDate>21 Feb 2026</creationDate>
     <copyright>2026 Charlie Bigley</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>charlie@bigley.me.uk</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>1.0.0</version>
+    <version>1.0.7</version>
     <description>PLG_WEBSERVICES_PLG_RA_DEVELOP_XML_DESCRIPTION</description>
     <namespace path="src">Ramblers\Plugin\WebServices\Ra_develop</namespace>
     <files>

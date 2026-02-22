@@ -1,11 +1,12 @@
 <?php
 /**
- * @version    1.0.0
+ * @version    1.0.7
  * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
- */
+ * 21/02/26 CB add routing for extensions 
+*/
 
 namespace Ramblers\Plugin\WebServices\Ra_develop\Extension;
 
@@ -51,5 +52,9 @@ class Ra_develop extends CMSPlugin implements SubscriberInterface
 
         // Create CRUD routes for builds
         $router->createCRUDRoutes('v1/ra_develop/builds', 'builds', ['component' => 'com_ra_develop']);
+
+
+        // Create CRUD routes for extensions
+         $router->createCRUDRoutes('v1/ra_develop/extensions', 'extensions', ['component' => 'com_ra_develop']);
     }
 }

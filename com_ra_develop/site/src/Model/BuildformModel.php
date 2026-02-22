@@ -1,11 +1,12 @@
 <?php
 /**
- * @version    CVS: 0.7.0
- * @package    Com_Ra_develop
+ * @version    1.0.12
+ * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
- */
+ * 21/02/26 CB Derive manifest name, Give message for any failure
+*/
 
 namespace Ramblers\Component\Ra_develop\Site\Model;
 // No direct access.
@@ -51,6 +52,7 @@ class BuildformModel extends FormModel
         // Validate component directory exists
         if (!is_dir($componentDir)) {
             echo "Error: Component directory not found: $componentDir\n";
+			Factory::getApplication()->enqueueMessage("Error: Component directory not found: $componentDir", 'error');
             return false;
         }
 		if (substr($component, 0, 4) === 'com_') {
@@ -59,7 +61,7 @@ class BuildformModel extends FormModel
 			$manifestName = preg_replace('/^com_/', '', $component);
 		} else {
 			$manifest_directory = $componentDir;
-			$manifestName = $component;
+			$manifestName = substr($component,4); // Remove 'mod_', 'plg_ prefix 
 		}
         
         echo "Starting build for component: $component, version: $version<br>";
@@ -68,7 +70,9 @@ class BuildformModel extends FormModel
         echo "Manifest name: $manifestName<br>";
 		$sourceManifest = $manifest_directory . '/' . $manifestName . '.xml';
         if (!file_exists($sourceManifest)) {
-            return "Error: Source manifest file not found: $sourceManifest\n";
+            $response = "Error: Source manifest file not found: $sourceManifest\n";
+			Factory::getApplication()->enqueueMessage($response, 'error');
+            return $response;
         }
 
 		// Get the manifest version
@@ -76,7 +80,6 @@ class BuildformModel extends FormModel
 		if ($manifestVersion === null)
 		{
 			return $manifestVersion;
-//			return Text::_('COM_RA_DEVELOP_ERROR_COULD_NOT_READ_MANIFEST') . '<br>';
 		}
 		// Compare versions
 		if ($version !== $manifestVersion)
@@ -89,7 +92,9 @@ class BuildformModel extends FormModel
 		}		
         // Change to component directory
         if (!chdir($componentDir)) {
-            return "Error: Could not change to directory: $componentDir\n";
+            $response = "Error: Could not change to directory: $componentDir\n";
+			Factory::getApplication()->enqueueMessage($response, 'error');
+            return $response;
         }
         
         echo "Building $component-$version.zip...\n";
@@ -104,7 +109,9 @@ class BuildformModel extends FormModel
             if (file_exists($destManifest)) {
                 unlink($destManifest);
             }
-            return "Error: Could not create zip file\n";
+            $response = "Error: Could not create zip file\n";
+			Factory::getApplication()->enqueueMessage($response, 'error');
+            return $response;
         }
         
         // Directories to include in the zip - discover dynamically
@@ -133,7 +140,8 @@ class BuildformModel extends FormModel
                 }
                 $zip->addFile($file, $zipPath);
             } else {
-				echo "Warning: File not found and will be skipped: $file\n";
+				$response = "Warning: File not found and will be skipped: $file\n";
+				Factory::getApplication()->enqueueMessage($response, 'warning');
 			}
         }
         
@@ -142,7 +150,8 @@ class BuildformModel extends FormModel
             if (is_dir($dir)) {
                 $this->addDirToZip($zip, $dir, $dir);
             } else {
-				echo "Warning: Directory not found and will be skipped: $dir\n";	
+				$response = "Warning: Directory not found and will be skipped: $dir\n";
+				Factory::getApplication()->enqueueMessage($response, 'warning');
         	}
         }
 
@@ -152,8 +161,6 @@ class BuildformModel extends FormModel
         if (file_exists($zipFile)) {
             echo "✓ Package created successfully: $zipFile\n";
             Factory::getApplication()->enqueueMessage(  '✓ Created installation file: ' . $zipFile, 'info');
-        
-            echo "✓ Build complete\n";
             return true;
         } else {
             if (file_exists($destManifest)) {

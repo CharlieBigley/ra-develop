@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    1.0.0
+ * @version    1.0.11
  * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
@@ -21,7 +21,7 @@ use Joomla\Database\ParameterType;
  * Provides data access methods specifically designed for REST API consumption.
  * Handles pagination, filtering, sorting, and field selection for API responses.
  *
- * @since  1.0.0
+ * @since  1.0.6
  */
 class BuildsModel extends ListModel
 {

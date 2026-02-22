@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    1.0.1
+ * @version    1.0.11
  * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
@@ -133,7 +133,7 @@ class BuildsModel extends ListModel
 		
 		// DEBUG: Write to file to check if params are being read
 		$debugMsg = "populateState: data_source=" . $this->dataSource . ", remote_site_id=" . $params->get('remote_site_id', 'NOT_SET') . "\n";
-		file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $debugMsg, FILE_APPEND);
+		file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $debugMsg, FILE_APPEND);
 		
 		$this->setState('data.source', $this->dataSource);
 
@@ -142,7 +142,7 @@ class BuildsModel extends ListModel
 			$this->remoteSiteId = (int) $params->get('remote_site_id', 0);
 			$this->setState('data.remote_site_id', $this->remoteSiteId);
 			
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . " Remote mode - site ID: {$this->remoteSiteId}\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . " Remote mode - site ID: {$this->remoteSiteId}\n", FILE_APPEND);
 			
 			// Retrieve the remote site URL
 			if ($this->remoteSiteId > 0)
@@ -158,7 +158,7 @@ class BuildsModel extends ListModel
 				{
 					$this->remoteSiteUrl = $result->url;
 					$this->remoteSiteToken = $result->token;
-					file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . " Remote URL: {$this->remoteSiteUrl}\n", FILE_APPEND);
+					file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . " Remote URL: {$this->remoteSiteUrl}\n", FILE_APPEND);
 				}
 			}
 		}
@@ -348,8 +348,9 @@ class BuildsModel extends ListModel
 
 		try
 		{
-			// Build API URL to get total count
-			$apiUrl = $this->remoteSiteUrl . '/api/v1/ra_develop/builds';
+			// Build API URL to get total count with trimmed base URL
+			$debugUrl = rtrim($this->remoteSiteUrl, '/');
+			$apiUrl = $debugUrl . '/api/index.php/v1/ra_develop/builds';
 			
 			$params = array(
 				'limit' => 1  // We only need count, not data
@@ -410,7 +411,7 @@ class BuildsModel extends ListModel
 		{
 			$msg = 'Diagnostic: Remote site URL is empty. Remote site ID: ' . $this->remoteSiteId;
 			$app->enqueueMessage($msg, 'warning');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 			return array();
 		}
 
@@ -420,12 +421,17 @@ class BuildsModel extends ListModel
 			$msg .= ', Token present: yes';
 		}
 		$app->enqueueMessage($msg, 'notice');
-		file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+		file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 
 		try
 		{
-			// Build API URL with query parameters
-			$apiUrl = $this->remoteSiteUrl . '/api/v1/ra_develop/builds';
+			// Diagnostic: Log remote site URL trimming
+			$debugUrl = rtrim($this->remoteSiteUrl, '/');
+			$msg = '[REMOTE] Remote site base URL (trimmed): ' . $debugUrl;
+		$logPath = JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log';
+		file_put_contents($logPath, date('Y-m-d H:i:s') . ' DEBUG: ' . $msg . "\n", FILE_APPEND);
+			// Build API URL with query parameters - correct format: /api/index.php/v1/...
+			$apiUrl = $debugUrl . '/api/index.php/v1/ra_develop/builds';
 			
 			// Add pagination parameters
 			$limit = $this->getState('list.limit', 25);
@@ -456,9 +462,9 @@ class BuildsModel extends ListModel
 			$query = http_build_query($params);
 			$fullUrl = $apiUrl . '?' . $query;
 
-			$msg = '[REMOTE] API request URL: ' . $fullUrl;
+			$msg = '[REMOTE] Constructed full API request URL: ' . $fullUrl;
 			$app->enqueueMessage($msg, 'notice');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 
 			// Make HTTP request
 			$http = HttpFactory::getHttp();
@@ -468,34 +474,71 @@ class BuildsModel extends ListModel
 			if (!empty($this->remoteSiteToken))
 			{
 				$options['headers'] = array(
-					'Authorization' => 'Bearer ' . $this->remoteSiteToken
-				);
-				$msg = '[REMOTE] Adding Authorization header with token';
-				file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-			}
-			
-			$msg = '[REMOTE] Attempting HTTP GET request...';
-			$app->enqueueMessage($msg, 'notice');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-			
-			$response = $http->get($fullUrl, $options);
-
+			'Accept' => 'application/vnd.api+json',
+			'Content-Type' => 'application/json',
+			'X-Joomla-Token' => $this->remoteSiteToken
+		);
+		$msg = '[REMOTE] Adding X-Joomla-Token header with token';
+		file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+	}
+	else
+	{
+		$options['headers'] = array(
+			'Accept' => 'application/vnd.api+json',
+			'Content-Type' => 'application/json'
+		);
+		$msg = '[REMOTE] No X-Joomla-Token configured';
+		file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+	}
+	$msg .= "\n  Method: GET";
+	$msg .= "\n  Headers: " . (empty($options['headers']) ? 'none' : json_encode($options['headers']));
+	$app->enqueueMessage($msg, 'notice');
+	file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+	
+	$response = $http->get($fullUrl, $options);
 			$msg = '[REMOTE] HTTP response code: ' . $response->code;
 			$app->enqueueMessage($msg, 'notice');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 
 			// Check for error response codes
 			if ($response->code >= 400)
 			{
 				$errorBody = is_string($response->body) ? substr($response->body, 0, 500) : print_r($response->body, true);
-				$msg = '[REMOTE] API error response code ' . $response->code . ': ' . $errorBody;
-				file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ERROR: ' . $msg . "\n", FILE_APPEND);
-				throw new \Exception('API request failed with status code: ' . $response->code . '. Response: ' . $errorBody);
+				$msg = '[REMOTE] API error response code ' . $response->code . '. Trying alternative URL format with index.php...';
+				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' WARNING: ' . $msg . "\n", FILE_APPEND);
+				
+				// Try alternative URL format with index.php
+				$altApiUrl = $debugUrl . '/index.php/api/v1/ra_develop/builds';
+				$altFullUrl = $altApiUrl . '?' . $query;
+				
+				$msg = '[REMOTE] Attempting alternative URL: ' . $altFullUrl;
+				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+				
+				$altResponse = $http->get($altFullUrl, $options);
+				
+				$msg = '[REMOTE] Alternative URL response code: ' . $altResponse->code;
+				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+				
+				if ($altResponse->code >= 400)
+				{
+					// Both URLs failed
+					$altErrorBody = is_string($altResponse->body) ? substr($altResponse->body, 0, 500) : print_r($altResponse->body, true);
+					$msg = '[REMOTE] Both URL formats failed. Original: ' . $response->code . ', Alternative: ' . $altResponse->code . '. Response: ' . $errorBody;
+					file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ERROR: ' . $msg . "\n", FILE_APPEND);
+					throw new \Exception('API request failed with status code: ' . $response->code . '. Response: ' . $errorBody);
+				}
+				else
+				{
+					// Alternative URL worked, use that response
+					$response = $altResponse;
+					$msg = '[REMOTE] Alternative URL format successful!';
+					file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+				}
 			}
 
 			$msg = '[REMOTE] Response received, decoding JSON...';
 			$app->enqueueMessage($msg, 'notice');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 			
 			$data = json_decode($response->body);
 
@@ -506,13 +549,13 @@ class BuildsModel extends ListModel
 
 			$msg = '[REMOTE] JSON decoded successfully. Data type: ' . gettype($data);
 			$app->enqueueMessage($msg, 'notice');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 
 			if (empty($data))
 			{
 				$msg = '[REMOTE] Response data is empty';
 				$app->enqueueMessage($msg, 'notice');
-				file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 				return array();
 			}
 
@@ -522,7 +565,7 @@ class BuildsModel extends ListModel
 
 			$msg = '[REMOTE] SUCCESS: Extracted ' . count($items) . ' items from remote API';
 			$app->enqueueMessage($msg, 'notice');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 
 			// Convert to objects if needed and standardize field names
 			$result = array();
@@ -544,17 +587,17 @@ class BuildsModel extends ListModel
 
 			$msg = '[REMOTE] Successfully processed ' . count($result) . ' remote items for display';
 			$app->enqueueMessage($msg, 'notice');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 			return $result;
 		}
 		catch (\Exception $e)
 		{
 			$msg = '[REMOTE] ERROR fetching remote builds: ' . $e->getMessage();
 			$app->enqueueMessage($msg, 'error');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 			$msg = '[REMOTE] Stack trace - ' . $e->getTraceAsString();
 			$app->enqueueMessage($msg, 'warning');
-			file_put_contents('/tmp/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 			return array();
 		}
 	}

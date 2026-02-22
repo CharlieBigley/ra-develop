@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     1.0.0
+ * @version     1.0.11
  * @package     com_ra_develop
  * @copyright   Copyleft (C) 2021
  * @license     GNU General Public License version 2 or later; see LICENSE.txt

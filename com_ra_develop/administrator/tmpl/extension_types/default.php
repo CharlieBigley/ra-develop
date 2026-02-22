@@ -1,11 +1,12 @@
 <?php
 /**
- * @version    1.0.1
+ * @version    1.0.12
  * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
- */
+ * 21/02/26 CB use ramblers css
+*/
 
 // No direct access
 defined('_JEXEC') or die;
@@ -23,8 +24,7 @@ HTMLHelper::_('behavior.multiselect');
 
 // Import CSS
 $wa =  $this->document->getWebAssetManager();
-//$wa->useStyle('com_ra_tools.admin')
-//    ->useScript('com_ra_tools.admin');
+$wa->registerAndUseStyle('ramblers', 'com_ra_tools/ramblers.css');
 
 $user      = Factory::getApplication()->getIdentity();
 $userId    = $user->get('id');

@@ -1,12 +1,13 @@
 <?php
 
 /**
- * @version    CVS: 1.0.0
- * @package    Com_Hy_schema
+ * @version    1.0.12
+ * @package    com_ra_develop
  * @author     Charlie Bigley <webmaster@bigley.me.uk>
  * @copyright  2024 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
- */
+ * 21/02/26 CB use ramblers css
+*/
 // No direct access
 defined('_JEXEC') or die;
 
@@ -26,8 +27,7 @@ HTMLHelper::_('behavior.multiselect');
 
 // Import CSS
 $wa = $this->document->getWebAssetManager();
-$wa->useStyle('com_hy_schema.admin')
-        ->useScript('com_hy_schema.admin');
+$wa->registerAndUseStyle('ramblers', 'com_ra_tools/ramblers.css');
 
 $user = Factory::getApplication()->getIdentity();
 $userId = $user->get('id');

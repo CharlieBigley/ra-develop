@@ -1,51 +1,49 @@
 <?php
 /**
- * @version    1.0.11
+ * @version    1.0.12
  * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Ramblers\Component\Ra_develop\Administrator\Model;
+namespace Ramblers\Component\Ra_develop\Api\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\Model\ListModel;
-use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Helper\TagsHelper;
-use \Joomla\Database\ParameterType;
-use \Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Helper\TagsHelper;
+use Joomla\Database\ParameterType;
+use Joomla\Utilities\ArrayHelper;
 
 /**
- * Methods supporting a list of Subsystems records.
+ * Methods supporting a list of Extensions records.
  *
- * @since  0.2.0
+ * @since  0.4.0
  */
-class SubsystemsModel extends ListModel
+class ExtensionsModel extends ListModel
 {
 	/**
-	* Constructor.
-	*
-	* @param   array  $config  An optional associative array of configuration settings.
-	*
-	* @see        JController
-	* @since      1.6
-	*/
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see        JController
+	 * @since      1.6
+	 */
 	public function __construct($config = array())
 	{
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
 				'id', 'a.id',
-				'state', 'a.state',
-				'ordering', 'a.ordering',
-				'created_by', 'a.created_by',
-				'modified_by', 'a.modified_by',
-				'repository_name', 'a.repository_name',
-				'name', 'a.name',
+				'a.subsystem_id',
+				'a.name',
+				's.name',
+				't.name',
 			);
 		}
 
@@ -55,13 +53,6 @@ class SubsystemsModel extends ListModel
 		$lang = Factory::getApplication()->getLanguage();
 		$lang->load('com_ra_develop', JPATH_ADMINISTRATOR . '/components/com_ra_develop', 'en-GB', true);
 	}
-
-
-	
-
-	
-
-	
 
 	/**
 	 * Method to auto-populate the model state.
@@ -80,7 +71,7 @@ class SubsystemsModel extends ListModel
 		// List state information.
 		parent::populateState('checked_out', 'DESC');
 
-		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+		$context = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $context);
 
 		// Split context into component and optional section
@@ -107,7 +98,7 @@ class SubsystemsModel extends ListModel
 	 *
 	 * @return  string A store id.
 	 *
-	 * @since   0.2.0
+	 * @since   0.4.0
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -115,9 +106,7 @@ class SubsystemsModel extends ListModel
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.state');
 
-		
 		return parent::getStoreId($id);
-		
 	}
 
 	/**
@@ -125,7 +114,7 @@ class SubsystemsModel extends ListModel
 	 *
 	 * @return  DatabaseQuery
 	 *
-	 * @since   0.2.0
+	 * @since   0.4.0
 	 */
 	protected function getListQuery()
 	{
@@ -139,13 +128,19 @@ class SubsystemsModel extends ListModel
 				'list.select', 'DISTINCT a.*'
 			)
 		);
-		$query->from('`#__ra_sub_systems` AS a');
-		
-		// Join over the users for the checked out user
-		$query->select("uc.name AS uEditor");
-		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
+		$query->from('`#__ra_extensions` AS a');
+
+		// Get the sub system
+		$query->select("s.name AS subsystem_name");
+		$query->select("MAX(b.version_sort) AS max_version_sort");
+		$query->join("LEFT", "#__ra_sub_systems AS s ON s.id=a.subsystem_id");
+		$query->join("LEFT", "#__ra_builds AS b ON b.component_name=a.name");
 		
 
+		// Get the extension type
+		$query->select("t.name AS type_name");
+		$query->join("LEFT", "#__ra_extension_types AS t ON t.id=a.extension_type_id");
+		$query->group("t.name, s.name,a.name");
 		// Filter by published state
 		$published = $this->getState('filter.state');
 
@@ -170,10 +165,10 @@ class SubsystemsModel extends ListModel
 			else
 			{
 				$search = $db->Quote('%' . $db->escape($search, true) . '%');
-				$query->where('( a.repository_name LIKE ' . $search . ' )');
+				$query->where('( a.subsystem_id LIKE ' . $search . ' )');
 			}
 		}
-		
+
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'checked_out');
 		$orderDirn = $this->state->get('list.direction', 'DESC');
@@ -194,7 +189,35 @@ class SubsystemsModel extends ListModel
 	public function getItems()
 	{
 		$items = parent::getItems();
-		
+
+		foreach ($items as $oneItem)
+		{
+			if (isset($oneItem->subsystem_id))
+			{
+				$values    = explode(',', $oneItem->subsystem_id);
+				$textValue = array();
+
+				foreach ($values as $value)
+				{
+					$db    = $this->getDbo();
+					$query = $db->getQuery(true);
+
+					$query->select('`name`');
+					$query->from('`#__ra_sub_systems`');
+					$query->where('id = ' . (int) $value);
+
+					$db->setQuery($query);
+					$result = $db->loadResult();
+
+					if ($result)
+					{
+						$textValue[] = $result;
+					}
+				}
+
+				$oneItem->subsystem_id = !empty($textValue) ? implode(', ', $textValue) : $oneItem->subsystem_id;
+			}
+		}
 
 		return $items;
 	}
