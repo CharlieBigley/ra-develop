@@ -20,6 +20,9 @@ use Joomla\Utilities\ArrayHelper;
 use Ramblers\Component\Ra_develop\Site\Helper\HyperHelper;
 use Ramblers\Component\Ra_develop\Site\Helper\HyperTable;
 
+
+echo $this->$menu_id . '<br>';
+
 $table = $this->table;
 $config = Factory::getConfig();
 $database = $config->get('db');
@@ -50,6 +53,6 @@ foreach ($columns as $column) {
 }
 $objTable->generate_table();
 echo ($objTable->num_rows - 1) . ' columns in the table<br>';
-$back = "index.php?option=com_hy_schema&view=schemata";
+$back = "index.php?option=com_ra_develop&Itemid=" . $this->menu_id . "&view=schemata";
 echo $objHelper->backButton($back);
 

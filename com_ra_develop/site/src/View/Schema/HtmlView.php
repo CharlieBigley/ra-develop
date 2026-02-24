@@ -23,8 +23,8 @@ use \Joomla\CMS\Language\Text;
  * @since  1.0.1
  */
 class HtmlView extends BaseHtmlView {
-
-    protected $state;
+protected $menu_id;
+//    protected $state;
     protected $table;
     protected $params;
 
@@ -43,13 +43,7 @@ class HtmlView extends BaseHtmlView {
 
         $this->table = $app->input->getCmd('table', 'ra_faults');
         $this->params = $app->getParams('com_hy_schema');
-
-        // Check for errors.
-//        if (count($errors = $this->get('Errors'))) {
-//            throw new \Exception(implode("\n", $errors));
-//        }
-
-
+        $this->menu_id = $app->input->getInt('Itemid', 0);
         $this->_prepareDocument();
 
         parent::display($tpl);

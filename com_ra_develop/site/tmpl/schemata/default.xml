@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-	<layout title="Show list of tables with the given prefix" option="View">
+	<layout title="Show tables schema" option="View">
         <message>
                         <![CDATA[Show list of tables]]>
         </message>
@@ -10,8 +10,20 @@
             <fieldset name="basic"> 
 
                 <field name="note2" type="note" label="Specify the two character area code"/>
-                    <field name="prefix" type="text" default="ra" size="2" label="Prefix" description="Specify the characters that will restrict the list of tables" />
 
+                    <field name="display_type" type="list" 
+                    label="Display Type" 
+                    description="Choose whether to show all tables or only those with the specified prefix"
+                    >
+                        <option value="all">All Tables</option>
+                        <option value="prefix">Tables with specified prefix</option>
+                    </field>
+                    <field name="prefix" 
+                    type="text" default="ra" size="2" 
+                    showon="display_type:prefix"
+                    label="Prefix" 
+                    description="Specify the characters that will restrict the list of tables" 
+                    />
             </fieldset>
     	</fields>
     </config>	

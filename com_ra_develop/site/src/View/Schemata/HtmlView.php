@@ -23,7 +23,8 @@ use \Joomla\CMS\Language\Text;
  * @since  1.0.1
  */
 class HtmlView extends BaseHtmlView {
-
+protected $display_type;
+    protected $menu_id;
     protected $items;
     protected $pagination;
     protected $state;
@@ -42,7 +43,15 @@ class HtmlView extends BaseHtmlView {
         $app = Factory::getApplication();
 
         $this->params = $app->getParams('com_hy_schema');
-
+        $this->menu_id = $app->input->getInt('Itemid', 0);
+            $menu = $app->getMenu()->getActive();
+            if (is_null($menu)) {
+                echo 'Menu params are null<br>';
+            } else {
+                $menu_params = $menu->getParams();
+//              var_dump($menu_params);
+            }        
+        $this->display_type = $menu_params->get('display_type', 'all'  );
         $this->_prepareDocument();
         parent::display($tpl);
     }
