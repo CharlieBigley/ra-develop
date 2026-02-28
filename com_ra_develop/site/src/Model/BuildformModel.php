@@ -61,7 +61,7 @@ class BuildformModel extends FormModel
 			$manifestName = preg_replace('/^com_/', '', $component);
 		} else {
 			$manifest_directory = $componentDir;
-			$manifestName = substr($component,4); // Remove 'mod_', 'plg_ prefix 
+			$manifestName = substr($component,4); // Remove 'mod_', 'plg_' prefix 
 		}
         
         echo "Starting build for component: $component, version: $version<br>";
@@ -97,18 +97,15 @@ class BuildformModel extends FormModel
             return $response;
         }
         
-        echo "Building $component-$version.zip...\n";
+        echo "Building $component-$version.zip...<br>";
         
         // Create zip with required folders, manifest, and script
-        echo "  - Compressing files...\n";
+        echo "  - Compressing files...<br>";
         
         $zipFile = "$component-$version.zip";
         $zip = new \ZipArchive();
         
         if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-            if (file_exists($destManifest)) {
-                unlink($destManifest);
-            }
             $response = "Error: Could not create zip file\n";
 			Factory::getApplication()->enqueueMessage($response, 'error');
             return $response;
@@ -122,8 +119,8 @@ class BuildformModel extends FormModel
         $items = scandir('.');
         foreach ($items as $item) {
             if (is_dir($item) && !in_array($item, $excludeDirs) && strpos($item, '.') !== 0) {
-            echo 'including directory: ' . $item . "\n"; // --- IGNORE ---
-			$dirsToInclude[] = $item;
+				echo 'including directory: ' . $item . '<br>'; // --- IGNORE ---
+				$dirsToInclude[] = $item;
             }
         }
         
@@ -131,6 +128,7 @@ class BuildformModel extends FormModel
         
         // Add files
         foreach ($filesToInclude as $file) {
+			echo 'including file: ' . $file . '<br>'; 
             if (file_exists($file)) {
                 // Use relative path for manifest file in zip
                 if (strpos($file, 'administrator/') === 0) {
@@ -140,6 +138,7 @@ class BuildformModel extends FormModel
                 }
                 $zip->addFile($file, $zipPath);
             } else {
+				echo '.. not found: ' . $file . '<br>'; 
 				$response = "Warning: File not found and will be skipped: $file\n";
 				Factory::getApplication()->enqueueMessage($response, 'warning');
 			}
@@ -149,7 +148,9 @@ class BuildformModel extends FormModel
         foreach ($dirsToInclude as $dir) {
             if (is_dir($dir)) {
                 $this->addDirToZip($zip, $dir, $dir);
+				echo 'added directory to zip: ' . $dir . '<br>';
             } else {
+				echo '.. directory not found: ' . $dir . '<br>'; 
 				$response = "Warning: Directory not found and will be skipped: $dir\n";
 				Factory::getApplication()->enqueueMessage($response, 'warning');
         	}
@@ -163,9 +164,8 @@ class BuildformModel extends FormModel
             Factory::getApplication()->enqueueMessage(  '✓ Created installation file: ' . $zipFile, 'info');
             return true;
         } else {
-            if (file_exists($destManifest)) {
-                unlink($destManifest);
-            }
+			echo "✗ Failed to create installation file: $zipFile\n";
+			die;
 			Factory::getApplication()->enqueueMessage(  '✗ Failed to create installation file: ' . $zipFile, 'error');
             return "✗ Error: Failed to create zip file\n";
         }
