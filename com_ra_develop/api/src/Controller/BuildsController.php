@@ -38,7 +38,7 @@ class BuildsController extends ApiController
     protected $default_view = 'builds';
 
 	/**
-	 * Authorizes the request (overridden for temporary public access)
+	 * Authorizes the request (override for temporary public access)
 	 *
 	 * @return bool
 	 * @since 1.0.0
@@ -70,6 +70,15 @@ class BuildsController extends ApiController
 		$msg .= "\n  Query String: " . $_SERVER['QUERY_STRING'] ?? 'N/A';
 		$logPath = JPATH_ADMINISTRATOR . '/logs/api_builds_debug.log';
 		file_put_contents($logPath, date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->insert($db->quoteName('#__ra_logfile'))
+			->set('sub_system = ' . $db->quote('RA Develop'))
+			->set('record_type = ' . $db->quote(10))
+			->set('ref = ' . $db->quote('builds'))
+			->set('message = ' . $db->quote($msg));
+		$db->setQuery($query)->execute();
 		
 		return parent::display($cachable, $urlparams);
 	}

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    1.0.12
+ * @version    2.0.1
  * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
@@ -102,10 +102,11 @@ class BuildformModel extends FormModel
         // Create zip with required folders, manifest, and script
         echo "  - Compressing files...<br>";
         
-        $zipFile = "$component-$version.zip";
+		$zipFile = "$component-$version.zip";
+		$zipFilePath = $componentDir . '/' . $zipFile;
         $zip = new \ZipArchive();
         
-        if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+		if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
             $response = "Error: Could not create zip file\n";
 			Factory::getApplication()->enqueueMessage($response, 'error');
             return $response;
@@ -156,16 +157,19 @@ class BuildformModel extends FormModel
         	}
         }
 
-        $zip->close();
+		$closeOk = $zip->close();
         
         // Step 3: Verify zip was created
-        if (file_exists($zipFile)) {
+		if ($closeOk && file_exists($zipFilePath)) {
             echo "✓ Package created successfully: $zipFile\n";
             Factory::getApplication()->enqueueMessage(  '✓ Created installation file: ' . $zipFile, 'info');
             return true;
         } else {
+			if (!$closeOk) {
+				$status = $zip->getStatusString();
+				Factory::getApplication()->enqueueMessage('Zip close failed: ' . $status, 'error');
+			}
 			echo "✗ Failed to create installation file: $zipFile\n";
-			die;
 			Factory::getApplication()->enqueueMessage(  '✗ Failed to create installation file: ' . $zipFile, 'error');
             return "✗ Error: Failed to create zip file\n";
         }

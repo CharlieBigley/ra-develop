@@ -1,6 +1,7 @@
 <?php
+
 /**
- * @version    1.0.11
+ * @version    2.0.1
  * @package    com_ra_develop
  * @author     Barlie Chigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
@@ -21,6 +22,7 @@ use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Http\HttpFactory;
 use \Joomla\Uri\Uri;
+use Ramblers\Component\Ra_develop\Site\Helper\JsonHelper;
 
 
 /**
@@ -258,25 +260,14 @@ class BuildsModel extends ListModel
 	 */
 	public function getItems()
 	{
-		$app = Factory::getApplication();
 		$dataSource = $this->getState('data.source');
-		
-		// Log diagnostic info
-		$logMsg = 'BuildsModel::getItems() - data.source state: ' . ($dataSource ? $dataSource : 'NULL/FALSE');
-		$app->enqueueMessage('DIAG: ' . $logMsg, 'notice');
-		\Joomla\CMS\Log\Log::add($logMsg, \Joomla\CMS\Log\Log::INFO, 'com_ra_develop');
-
 		// If remote mode, fetch from API
 		if ($dataSource === 'remote')
 		{
-			$app->enqueueMessage('DIAG: Routing to getRemoteItems()', 'notice');
 			return $this->getRemoteItems();
 		}
-
-		$app->enqueueMessage('DIAG: Routing to parent::getItems()', 'notice');
 		// Otherwise use local database query
 		$items = parent::getItems();
-		
 		return $items;
 	}
 
@@ -350,43 +341,25 @@ class BuildsModel extends ListModel
 		{
 			// Build API URL to get total count with trimmed base URL
 			$debugUrl = rtrim($this->remoteSiteUrl, '/');
-			$apiUrl = $debugUrl . '/api/index.php/v1/ra_develop/builds';
-			
-			$params = array(
-				'limit' => 1  // We only need count, not data
-			);
-
-			// Add search filter if present
+			$endpoint = '/api/index.php/v1/ra_develop/builds?limit=1';
 			$search = $this->getState('filter.search');
-			if (!empty($search))
-			{
-				$params['filter'] = $search;
+			if (!empty($search)) {
+				$endpoint .= '&filter=' . urlencode($search);
 			}
-
-			$query = http_build_query($params);
-			$fullUrl = $apiUrl . '?' . $query;
-
-			// Make HTTP request
-			$http = HttpFactory::getHttp();
-			$response = $http->get($fullUrl);
-
-			if ($response->code !== 200)
-			{
-				throw new \Exception('API count request failed with status code: ' . $response->code);
+			// Use JsonHelper with verbose=1
+			$api_site_id = $this->remoteSiteId;
+			$response = \Ramblers\Component\Ra_develop\Site\Helper\JsonHelper::fetchApiData($api_site_id, $endpoint, 1);
+			if (isset($response['error'])) {
+				throw new \Exception('API count request failed: ' . $response['error']);
 			}
-
-			$data = json_decode($response->body);
-
 			// Try to get total count from response headers or metadata
-			if (isset($data->total))
-			{
-				return (int) $data->total;
+			if (isset($response['total'])) {
+				return (int) $response['total'];
+			} elseif (isset($response['@odata.count'])) {
+				return (int) $response['@odata.count'];
+			} elseif (isset($response['data']) && is_array($response['data'])) {
+				return count($response['data']);
 			}
-			elseif (isset($data->{'@odata.count'}))
-			{
-				return (int) $data->{'@odata.count'};
-			}
-
 			// Default fallback: return reasonable number for pagination
 			return 100;
 		}
@@ -404,202 +377,39 @@ class BuildsModel extends ListModel
 	 */
 	protected function getRemoteItems()
 	{
+		// Use JsonHelper to fetch remote build records
 		$app = Factory::getApplication();
+		$params = $app->getParams('com_ra_develop');
+		$verbose = (int) $params->get('api_verbose', 0);
+		$api_site_id = $this->remoteSiteId;
+		$endpoint = '/api/index.php/v1/ra_develop/builds?limit=' . $this->getState('list.limit', 25) . '&start=' . $this->getState('list.start', 0);
 
-		// Diagnostic: Check remote site URL
-		if (empty($this->remoteSiteUrl))
-		{
-			$msg = 'Diagnostic: Remote site URL is empty. Remote site ID: ' . $this->remoteSiteId;
-			$app->enqueueMessage($msg, 'warning');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-			return array();
+		// Add ordering and filter if present
+		$orderCol = $this->getState('list.ordering', 'build_date');
+		$orderDirn = $this->getState('list.direction', 'DESC');
+		if ($orderCol && $orderDirn) {
+			$endpoint .= '&sort=' . $orderCol . ':' . strtolower($orderDirn);
+		}
+		$search = $this->getState('filter.search');
+		if (!empty($search)) {
+			$endpoint .= '&filter=' . urlencode($search);
 		}
 
-		$msg = '[REMOTE INVOKE] Remote site URL: ' . $this->remoteSiteUrl;
-		if ($this->remoteSiteToken)
-		{
-			$msg .= ', Token present: yes';
+		// Call JsonHelper
+		$response = JsonHelper::fetchApiData($api_site_id, $endpoint, $verbose);
+		if (isset($response['data']) && is_array($response['data'])) {
+			$items = array();
+			foreach ($response['data'] as $item) {
+				if (isset($item['attributes'])) {
+					$items[] = (object) $item['attributes'];
+				} else {
+					$items[] = (object) $item;
+				}
+			}
+			return $items;
 		}
-		$app->enqueueMessage($msg, 'notice');
-		file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-
-		try
-		{
-			// Diagnostic: Log remote site URL trimming
-			$debugUrl = rtrim($this->remoteSiteUrl, '/');
-			$msg = '[REMOTE] Remote site base URL (trimmed): ' . $debugUrl;
-		$logPath = JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log';
-		file_put_contents($logPath, date('Y-m-d H:i:s') . ' DEBUG: ' . $msg . "\n", FILE_APPEND);
-			// Build API URL with query parameters - correct format: /api/index.php/v1/...
-			$apiUrl = $debugUrl . '/api/index.php/v1/ra_develop/builds';
-			
-			// Add pagination parameters
-			$limit = $this->getState('list.limit', 25);
-			$start = $this->getState('list.start', 0);
-			
-			$params = array(
-				'limit' => $limit,
-				'start' => $start
-			);
-
-			// Add ordering
-			$orderCol = $this->getState('list.ordering', 'build_date');
-			$orderDirn = $this->getState('list.direction', 'DESC');
-			
-			if ($orderCol && $orderDirn)
-			{
-				$params['sort'] = $orderCol . ':' . strtolower($orderDirn);
-			}
-
-			// Add search filter if present
-			$search = $this->getState('filter.search');
-			if (!empty($search))
-			{
-				$params['filter'] = $search;
-			}
-
-			// Build query string
-			$query = http_build_query($params);
-			$fullUrl = $apiUrl . '?' . $query;
-
-			$msg = '[REMOTE] Constructed full API request URL: ' . $fullUrl;
-			$app->enqueueMessage($msg, 'notice');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-
-			// Make HTTP request
-			$http = HttpFactory::getHttp();
-			
-			// Prepare headers with security token if available
-			$options = array();
-			if (!empty($this->remoteSiteToken))
-			{
-				$options['headers'] = array(
-			'Accept' => 'application/vnd.api+json',
-			'Content-Type' => 'application/json',
-			'X-Joomla-Token' => $this->remoteSiteToken
-		);
-		$msg = '[REMOTE] Adding X-Joomla-Token header with token';
-		file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-	}
-	else
-	{
-		$options['headers'] = array(
-			'Accept' => 'application/vnd.api+json',
-			'Content-Type' => 'application/json'
-		);
-		$msg = '[REMOTE] No X-Joomla-Token configured';
-		file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-	}
-	$msg .= "\n  Method: GET";
-	$msg .= "\n  Headers: " . (empty($options['headers']) ? 'none' : json_encode($options['headers']));
-	$app->enqueueMessage($msg, 'notice');
-	file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-	
-	$response = $http->get($fullUrl, $options);
-			$msg = '[REMOTE] HTTP response code: ' . $response->code;
-			$app->enqueueMessage($msg, 'notice');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-
-			// Check for error response codes
-			if ($response->code >= 400)
-			{
-				$errorBody = is_string($response->body) ? substr($response->body, 0, 500) : print_r($response->body, true);
-				$msg = '[REMOTE] API error response code ' . $response->code . '. Trying alternative URL format with index.php...';
-				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' WARNING: ' . $msg . "\n", FILE_APPEND);
-				
-				// Try alternative URL format with index.php
-				$altApiUrl = $debugUrl . '/index.php/api/v1/ra_develop/builds';
-				$altFullUrl = $altApiUrl . '?' . $query;
-				
-				$msg = '[REMOTE] Attempting alternative URL: ' . $altFullUrl;
-				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-				
-				$altResponse = $http->get($altFullUrl, $options);
-				
-				$msg = '[REMOTE] Alternative URL response code: ' . $altResponse->code;
-				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-				
-				if ($altResponse->code >= 400)
-				{
-					// Both URLs failed
-					$altErrorBody = is_string($altResponse->body) ? substr($altResponse->body, 0, 500) : print_r($altResponse->body, true);
-					$msg = '[REMOTE] Both URL formats failed. Original: ' . $response->code . ', Alternative: ' . $altResponse->code . '. Response: ' . $errorBody;
-					file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ERROR: ' . $msg . "\n", FILE_APPEND);
-					throw new \Exception('API request failed with status code: ' . $response->code . '. Response: ' . $errorBody);
-				}
-				else
-				{
-					// Alternative URL worked, use that response
-					$response = $altResponse;
-					$msg = '[REMOTE] Alternative URL format successful!';
-					file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-				}
-			}
-
-			$msg = '[REMOTE] Response received, decoding JSON...';
-			$app->enqueueMessage($msg, 'notice');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-			
-			$data = json_decode($response->body);
-
-			if ($data === null && json_last_error() !== JSON_ERROR_NONE)
-			{
-				throw new \Exception('JSON decode error: ' . json_last_error_msg() . '. Body: ' . substr($response->body, 0, 500));
-			}
-
-			$msg = '[REMOTE] JSON decoded successfully. Data type: ' . gettype($data);
-			$app->enqueueMessage($msg, 'notice');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-
-			if (empty($data))
-			{
-				$msg = '[REMOTE] Response data is empty';
-				$app->enqueueMessage($msg, 'notice');
-				file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-				return array();
-			}
-
-			// Extract items from API response
-			// API returns items in 'data' array if following JSON:API spec, or direct array
-			$items = is_array($data) ? $data : (isset($data->data) ? $data->data : array());
-
-			$msg = '[REMOTE] SUCCESS: Extracted ' . count($items) . ' items from remote API';
-			$app->enqueueMessage($msg, 'notice');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-
-			// Convert to objects if needed and standardize field names
-			$result = array();
-			foreach ($items as $item)
-			{
-				if (is_array($item))
-				{
-					$item = (object) $item;
-				}
-
-				// Ensure all expected fields exist
-				if (!isset($item->extension_type))
-				{
-					$item->extension_type = '';
-				}
-
-				$result[] = $item;
-			}
-
-			$msg = '[REMOTE] Successfully processed ' . count($result) . ' remote items for display';
-			$app->enqueueMessage($msg, 'notice');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-			return $result;
-		}
-		catch (\Exception $e)
-		{
-			$msg = '[REMOTE] ERROR fetching remote builds: ' . $e->getMessage();
-			$app->enqueueMessage($msg, 'error');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-			$msg = '[REMOTE] Stack trace - ' . $e->getTraceAsString();
-			$app->enqueueMessage($msg, 'warning');
-			file_put_contents(JPATH_ADMINISTRATOR . '/logs/builds_model_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-			return array();
-		}
+		// Error or empty
+		return array();
 	}
 
 	/**

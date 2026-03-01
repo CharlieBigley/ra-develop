@@ -23,6 +23,16 @@
             require="true"
             description="Site from which the data is to be read">
         </field>        
+        <field
+          name="api_verbose"
+          type="radio"
+          default="0"
+          label="API Verbose Diagnostics"
+          description="Enable verbose logging for API requests (diagnostics to database)"
+          >
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </field>
     </fieldset>
 
     <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">

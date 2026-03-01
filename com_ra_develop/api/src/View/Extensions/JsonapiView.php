@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\MVC\View\JsonApiView as BaseApiView;
 
 /**
- * The Builds JSON API view
+ * The Extensions JSON API view
  *
  * @since  1.0.0
  */
@@ -31,10 +31,10 @@ class JsonapiView extends BaseApiView
      */
     protected $fieldsToRenderItem = [
         'id',
-        'subsystem_name',  // Read-only: from sub_sytems join 
+        'subsystem_name',  // Read-only: from sub_systems join
         'name',
-        'type_name',       // Read-only: from extension_types join 
-        'max_version_sort', 
+        'type_name',       // Read-only: from extension_types join
+        'max_version_sort',
     ];
 
     /**
@@ -48,9 +48,9 @@ class JsonapiView extends BaseApiView
      */
     protected $fieldsToRenderList = [
         'id',
-        'subsystem_name',  // Read-only: from sub_sytems join 
+        'subsystem_name',  // Read-only: from sub_systems join
         'name',
-        'type_name',       // Read-only: from extension_types join 
-        'max_version_sort', 
+        'type_name',       // Read-only: from extension_types join
+        'max_version_sort',
     ];
 }

@@ -1,10 +1,12 @@
 <?php
 /**
- * @version    1.0.11
+ * @version    2.0.1
  * @package    com_ra_develop
  * @author     Charlie Bigley <charlie@bigley.me.uk>
  * @copyright  2026 Charlie Bigley
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * 28/02/26 GPT insertd logging into getItems() to debug API data retrieval issues
+ * 28/02/26 GPT extra logging 17:58 - check if parent::getItems() returns false and log that case
  */
 
 namespace Ramblers\Component\Ra_develop\Api\Model;
@@ -100,7 +102,7 @@ class BuildsModel extends ListModel
 
 		// Select distinct builds with extension type
 		$query->select(
-			'DISTINCT a.id, a.component_name, a.version, a.build_date, a.notes, a.replace, a.version_note, a.state, a.created_by, a.modified_by'
+			'DISTINCT a.id, a.component_name, a.version, a.build_date, a.state, a.created_by, a.modified_by'
 		);
 
 		$query->from($db->quoteName('#__ra_builds') . ' AS a');
@@ -161,16 +163,29 @@ class BuildsModel extends ListModel
 	 */
 	public function getItems()
 	{
-		$app = Factory::getApplication();
-		
-		// Log API request
-		$msg = '[API SERVER] BuildsModel::getItems() invoked - building query';
-		file_put_contents('/tmp/api_builds_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-		
 		$items = parent::getItems();
-		
-		$msg = '[API SERVER] Query executed - retrieved ' . count($items) . ' records from database';
-		file_put_contents('/tmp/api_builds_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+		if ($items === false)
+		{
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+			$query->insert($db->quoteName('#__ra_logfile'))
+				->set('sub_system = ' . $db->quote('RA Develop'))
+				->set('record_type = ' . $db->quote(10))
+				->set('ref = ' . $db->quote('builds'))
+				->set('message = ' . $db->quote('Query failed - parent::getItems() returned false'));
+			$db->setQuery($query)->execute();
+
+			return array();
+		}
+
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+		$query->insert($db->quoteName('#__ra_logfile'))
+			->set('sub_system = ' . $db->quote('RA Develop'))
+			->set('record_type = ' . $db->quote(10))
+			->set('ref = ' . $db->quote('builds'))
+			->set('message = ' . $db->quote('Records selected: ' . count($items)));
+		$db->setQuery($query)->execute();
 
 		// Standardize field names for API response
 		foreach ($items as &$item)
@@ -181,9 +196,6 @@ class BuildsModel extends ListModel
 				$item->extension_type = '';
 			}
 		}
-
-		$msg = '[API SERVER] Returning ' . count($items) . ' items to API client';
-		file_put_contents('/tmp/api_builds_debug.log', date('Y-m-d H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
 
 		return $items;
 	}

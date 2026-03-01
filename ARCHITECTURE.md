@@ -120,6 +120,37 @@ Both modes present identical UI/columns, unified interface, with transparent swi
 
 **Template:** `site/tmpl/builds/default.php`
 - Receives $this->items from model
+# -------------------------------------------------------------
+# Documentation Update
+# Date: 2026-03-01
+# Author: GPT 4.1
+# -------------------------------------------------------------
+
+## Summary
+
+The RA Develop component provides a flexible dual-mode architecture for displaying build records. It allows seamless switching between local database queries and remote API calls, ensuring consistent UI and user experience. This design supports distributed teams, multi-site management, and robust diagnostics.
+
+## Switching Logic
+
+The data source mode is controlled via a menu parameter (`data_source`), set in the Joomla menu configuration for the Builds view. Admins can select "local" or "remote" to determine where build data is fetched. The remote site and token are configured in the component's config settings.
+
+## Error Handling & Diagnostics
+
+If the remote API is unreachable or returns errors (e.g., 401 Unauthorized), the system logs detailed diagnostics to the `#__ra_logfile` table. User-facing error messages are shown in the UI, and verbose logging can be enabled via the `api_verbose` config setting. If remote mode fails, the system does not automatically fallback to local mode, but clear feedback is provided.
+
+## Authentication Details
+
+Remote API requests use a token stored in the `#__ra_api_sites` table. Both `X-Joomla-Token` and `Authorization: Bearer` headers are sent for compatibility. Tokens should be managed securely and only granted to trusted users/sites. The config UI allows selection of the remote site and token.
+
+## Extensibility
+
+The architecture is designed for easy extension. New data sources or endpoints can be added by updating the model logic and configuration. Helper classes (e.g., `JsonHelper`) centralize API logic and diagnostics, making future enhancements straightforward.
+
+## Improved Architecture Diagram
+
+Key files: `BuildsModel.php`, `JsonHelper.php`, `config.xml`, `#__ra_api_sites`, `#__ra_logfile`
+Verbose logging: Enabled via config, written by `JsonHelper`
+
 - Identical columns regardless of source
 - Optional background-color from remote site (#__ra_api_sites table)
 
@@ -224,17 +255,13 @@ Joomla autoloader finds each file using this mapping.
         type="list" 
         default="local" 
         label="Data Source">
-    <option value="local">Local Database</option>
     <option value="remote">Remote API</option>
 </field>
 
-<field name="remote_site_id" 
         type="sql" 
         label="Remote Site"
-        query="SELECT id, name FROM #__ra_api_sites WHERE state=1">
 </field>
 ```
-
 ### Remote Site Registry (#__ra_api_sites table)
 
 ```sql
